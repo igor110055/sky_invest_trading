@@ -1,5 +1,7 @@
 import os
 
+from datetime import timedelta
+
 from pathlib import Path
 from decouple import config
 
@@ -30,12 +32,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
+    'rest_framework.authtoken',
     'drf_yasg',
+    'djoser',
 
     # apps
     'apps.users.apps.UsersConfig',
     'apps.copytrade.apps.CopytradeConfig',
     'apps.actions.apps.ActionsConfig',
+    'apps.telegram_bot.apps.TelegramBotConfig',
 
 ]
 
@@ -137,6 +142,36 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = config('EMAIL_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_PASSWORD')
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
-# }
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSIONS_CLASSES': (
+        'rest_framework.permissions.DjangoModelPermissions'
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+
+}
+
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': 'user/password/reset/confirm/{uid}/{token}',
+    'ACTIVATION_URL': 'user/activation/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': True,
+
+    'SERIALIZERS': {
+        'user': 'apps.users.serializers.UserSerializer',
+        # 'user_create': 'apps.users.serializers.UserRegisterSerializer',
+        'current_user': 'apps.users.serializers.UserSerializer',
+    }
+}
