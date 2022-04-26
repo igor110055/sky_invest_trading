@@ -1,16 +1,7 @@
-import decimal
-import jwt
-
 from django.db import models
 from django.contrib.auth.models import PermissionsMixin, AbstractUser
-from django.utils import timezone
-from django.conf import settings
 
-from datetime import datetime, timedelta
-
-from .regexs import inn_regex
-
-import random
+from .managers import UserManager
 
 
 class User(AbstractUser, PermissionsMixin):
@@ -23,8 +14,10 @@ class User(AbstractUser, PermissionsMixin):
     is_active = models.BooleanField(default=False, verbose_name='Активный')
     is_trader = models.BooleanField(default=False, verbose_name='Трейдер')
 
+    objects = UserManager()
+
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = ['username', 'phone_number', 'first_name', 'last_name']
 
     class Meta:
         verbose_name = 'Пользователь'

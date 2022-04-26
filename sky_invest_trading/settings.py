@@ -35,12 +35,14 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'drf_yasg',
     'djoser',
+    'debug_toolbar',
 
     # apps
     'apps.users.apps.UsersConfig',
     'apps.copytrade.apps.CopytradeConfig',
     'apps.actions.apps.ActionsConfig',
     'apps.telegram_bot.apps.TelegramBotConfig',
+    'apps.payments.apps.PaymentsConfig',
 
 ]
 
@@ -52,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'sky_invest_trading.urls'
@@ -125,6 +128,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+MEDIA_URL = 'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -175,3 +182,35 @@ DJOSER = {
         'current_user': 'apps.users.serializers.UserSerializer',
     }
 }
+
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'register': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/register.log'
+        }
+    },
+    'loggers': {
+        'register': {
+            'level': 'INFO',
+            'handlers': ['register'],
+            'propagate': True
+        }
+    }
+}
+
+
+# Yomoney
+YOMONEY_POCKET = config('YOMONEY_POCKET')
+YOMONEY_SECRET = config('YOMONEY_SECRET')
+
+

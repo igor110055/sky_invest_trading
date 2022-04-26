@@ -11,8 +11,8 @@ from .serializers import ActionSerializer
 class ActionViewSet(ListModelMixin,
                     GenericViewSet):
 
-    queryset = Action.objects.all()
     serializer_class = ActionSerializer
+    queryset = Action.objects.all()
 
     def get_queryset(self):
         return self.queryset.objects.filter(user=self.request.user).all()

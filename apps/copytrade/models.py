@@ -10,7 +10,7 @@ class TradeGroup(models.Model):
     trader = models.ForeignKey(Trader, on_delete=models.SET_NULL,
                                null=True, related_name='groups', verbose_name='Создатель')
     title = models.CharField(max_length=150)
-    slug = models.SlugField(max_length=150, unique=True, default=uuid.uuid4())
+    slug = models.SlugField(max_length=150, unique=True, default=uuid.uuid4)
     description = models.CharField(max_length=500)
     created = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     investors = models.ManyToManyField(User, verbose_name='Инвесторы', through='Membership')

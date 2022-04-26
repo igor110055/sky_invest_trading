@@ -10,6 +10,7 @@ class Action(models.Model):
         TOP_UP_BALANCE = 'top_up_balance', 'Пополнение баланса'
         WITHDRAW = 'withdraw', 'Вывод'
         JOIN = 'join_group', 'Присоединение к группе'
+        CREATE_GROUP = 'create_group', 'Создание группы'
 
     class Status(models.TextChoices):
         SUCCESS = 'success', 'Успешно'
