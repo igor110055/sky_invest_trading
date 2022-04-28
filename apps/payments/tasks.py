@@ -1,2 +1,52 @@
 from sky_invest_trading.celery import app
+from django.conf import settings
 
+from .models import PaymentOrder
+from .utils import convert_to_usd
+from decimal import Decimal
+
+import hashlib
+
+
+@app.task()
+def yomoney_payment_handler(request) -> None:
+    data = request.POST
+    str_list = [
+        str(data['notification_type']),
+        str(data['operation_id']),
+        str(data['amount']),
+        str(data['currency']),
+        str(data['datetime']),
+        str(data['sender']),
+        str(data['codepro']),
+        str(settings.YOMONEY_SECRET),
+        str(data['label'])
+    ]
+    sha = ''
+    for i in str_list:
+        if i != '':
+            sha += i + '&'
+    hash_object = hashlib.sha1(bytes(sha[0:-1], 'utf-8')).hexdigest()
+
+    if hash_object == data['sha1_hash']:
+        payment_order = PaymentOrder.objects.select_related('user__balance').get(payment_order_id=data['label'])
+
+        if str(data['notification_type']) == 'card-incoming':
+            amount = float(data['amount'])
+            if amount >= payment_order.amount:
+                user_pocket = payment_order.user.balance
+
+                payment_order.paid = True
+                payment_order.save(update_fields=['paid'])
+
+                user_pocket.balance += Decimal(data['amount'])
+                user_pocket.save(update_fields=['balance'])
+
+        if convert_to_usd(float(data['withdraw_amount'])) >= payment_order.amount:
+            user_pocket = payment_order.user.balance
+
+            payment_order.paid = True
+            payment_order.save(update_fields=['paid'])
+
+            user_pocket.balance += Decimal(data['amount'])
+            user_pocket.save(update_fields=['balance'])

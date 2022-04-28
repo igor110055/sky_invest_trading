@@ -22,3 +22,14 @@ class PaymentOrder(models.Model):
     def __str__(self):
         return f'{self.user} : {self.amount} | {self.created}'
 
+
+class Currency(models.Model):
+    name = models.CharField(max_length=5, verbose_name='Имя валюты')
+    value = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Курс по отношению к сому')
+
+    class Meta:
+        verbose_name = "Валюта"
+        verbose_name_plural = "Валюта"
+
+    def __str__(self):
+        return f"{self.name} : {self.value}"

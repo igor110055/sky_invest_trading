@@ -3,13 +3,13 @@ from django.conf import settings
 import requests
 
 
-class YomoneyMixin:
+class YooMoneyMixin:
 
     url = 'https://yoomoney.ru/quickpay/confirm.xml'
 
     def get_payment_url_for_yomoney(self, amount: int, payment_id: str) -> str:
         params = {
-            'receiver': settings.YOMONEY_POCKET,
+            'receiver': settings.YOOMONEY_POCKET,
             'quickpay-form': 'small',
             'targets': 'Пополнение баланса Sky invest',
             'paymentType': 'PC',
