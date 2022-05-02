@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  server:
+    build: .
+    command: bash -c "
+      python manage.py migrate && python manage.py runserver
+      "
+    restart: always
+    environment:
+      - DB_HOST=db
+    volumes:
+      - .:/app
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:alpine
+    restart: always
+
+  celery:
+    build:
+      context: .
+    command: celery -A sky_invest_trading worker --loglevel=WARNING
+    restart: always
+    environment:
+      - DB_HOST=db
+    volumes:
+      - ./sky_invest_trading:/app
+    depends_on:
+      - rabbitmq
+      - server
+
+#  nginx:
+#    image: nginx:alpine
+#    volumes:
+#      - ./nginx.dev.conf:/etc/nginx/conf.d/default.conf
+#      - ./static:/var/www/server/static
+#    ports:
+#      - "80:80"
+#    depends_on:
+#      - server

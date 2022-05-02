@@ -7,8 +7,14 @@ from apps.users.models import Trader, User
 
 class TradeGroup(models.Model):
     """Модель группы трейдера"""
+
+    class GroupType(models.TextChoices):
+        TRADE = 'trade', 'трейдинг'
+        OTHER = 'other', 'другое'
+
     trader = models.ForeignKey(Trader, on_delete=models.SET_NULL,
                                null=True, related_name='groups', verbose_name='Создатель')
+    group_type = models.CharField(max_length=10, choices=GroupType.choices, verbose_name='Тип группы')
     title = models.CharField(max_length=150)
     slug = models.SlugField(max_length=150, unique=True, default=uuid.uuid4)
     description = models.CharField(max_length=500)

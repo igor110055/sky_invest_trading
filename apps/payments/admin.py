@@ -1,3 +1,9 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import PaymentOrder
+
+
+@admin.register(PaymentOrder)
+class PaymentOrderAdmin(admin.ModelAdmin):
+    list_display = ['user', 'amount', 'paid']
+    list_display_links = list_display

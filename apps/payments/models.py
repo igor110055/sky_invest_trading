@@ -20,7 +20,7 @@ class PaymentOrder(models.Model):
         verbose_name_plural = 'Платежи'
 
     def __str__(self):
-        return f'{self.user} : {self.amount} | {self.created}'
+        return f'{self.user} : {self.amount}'
 
 
 class Currency(models.Model):
