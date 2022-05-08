@@ -11,6 +11,12 @@ class TradeGroup(models.Model):
     class GroupType(models.TextChoices):
         TRADE = 'trade', 'трейдинг'
         OTHER = 'other', 'другое'
+        ICO = 'ico', 'ico'
+
+    class Status(models.TextChoices):
+        STARTED = 'started', 'стартовала'
+        RECRUITED = 'recruited', 'набирается'
+        COMPLETED = 'completed', 'завершена'
 
     trader = models.ForeignKey(Trader, on_delete=models.SET_NULL,
                                null=True, related_name='groups', verbose_name='Создатель')
@@ -27,6 +33,10 @@ class TradeGroup(models.Model):
     need_sum = models.PositiveSmallIntegerField(verbose_name='Необходимая сумма')
     min_entry_sum = models.PositiveSmallIntegerField(verbose_name='Минимальная сумма входа')
     max_entry_sum = models.PositiveSmallIntegerField(verbose_name='Максимальная сумма входа')
+
+    status = models.CharField(max_length=20, choices=Status.choices, verbose_name='Статус группы')
+    start_date = models.DateTimeField(verbose_name='Дата начала')
+    end_date = models.DateTimeField(verbose_name='Дата окончания')
 
     class Meta:
         verbose_name = 'Группа трейдера'
