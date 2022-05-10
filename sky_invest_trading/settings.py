@@ -214,3 +214,4 @@ YOOMONEY_POCKET = config('YOOMONEY_POCKET')
 YOOMONEY_SECRET = config('YOOMONEY_SECRET')
 
 
+CELERY_BROKER_URL = 'amqp://guest:guest@rabbitmq:5672/'

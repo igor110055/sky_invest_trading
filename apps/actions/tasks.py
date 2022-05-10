@@ -5,8 +5,10 @@ from .models import Action
 
 
 @app.task()
-def action_trade_group(trade_group: TradeGroup) -> None:
+def action_trade_group(trade_group_id: int) -> None:
     """action создания группы"""
+    trade_group = TradeGroup.objects.get(id=trade_group_id)
+    print(trade_group)
     Action.objects.create(
         user=trade_group.trader.user,
         action_type=Action.ActionType.CREATE_GROUP,
