@@ -15,10 +15,12 @@ services:
   server:
     build: .
     command: bash -c "
-      python manage.py migrate && python manage.py runserver
+      python manage.py migrate
       && gunicorn sky_invest_trading.wsgi:application --bind 0.0.0.0:8000
       "
     restart: always
+    ports:
+      - "8000:8000"
     env_file:
       - .env
     volumes:
