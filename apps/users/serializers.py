@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
-from .models import User, Trader, Document, DocumentImage, Rating
+from .models import User, Trader, Document, DocumentImage, Rating, Banner
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -98,3 +98,9 @@ class TraderDashboardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Trader
         fields = ('user', 'statistic', 'document')
+
+
+class BannerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Banner
+        fields = ('image',)

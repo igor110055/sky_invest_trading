@@ -6,10 +6,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.mixins import RetrieveModelMixin
 
-from .models import User, Document, DocumentImage, Trader
-from .serializers import TraderSerializer, DocumentSerializer, TraderDashboardSerializer
+from .models import User, Document, DocumentImage, Trader, Banner
+from .serializers import TraderSerializer, DocumentSerializer,\
+    TraderDashboardSerializer, BannerSerializer
 
 
 class TraderViewSet(GenericViewSet):
@@ -23,7 +23,6 @@ class TraderViewSet(GenericViewSet):
             url_name='trader_info')
     def trader_info(self, request, *args, **kwargs):
         instance = self.get_object()  # TODO: сделать запрос со статистикой
-        print(self.lookup_url_kwarg)
         serializer = TraderDashboardSerializer(instance)
         return Response(serializer.data)
 
@@ -56,3 +55,15 @@ class TraderViewSet(GenericViewSet):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+
+class BannerViewSet(GenericViewSet):
+    model = Banner
+    serializer_class = BannerSerializer
+    queryset = Banner.objects.all()
+    permission_classes = [AllowAny]
+
+    @action(methods=['get'], detail=False, serializer_class=BannerSerializer)
+    def get_banner(self, request):
+        banner = self.queryset.last()
+        serializer = BannerSerializer(banner)
+        return Response(serializer.data, status=status.HTTP_200_OK)

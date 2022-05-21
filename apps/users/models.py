@@ -26,32 +26,6 @@ class User(AbstractUser, PermissionsMixin):
     def __str__(self):
         return f'{self.email}'
 
-    # def generate_code(self):
-    #     """Генерируем активационный код"""
-    #     nums = [i for i in range(10)]
-    #     code_items = []
-    #
-    #     for i in range(6):
-    #         num = random.choice(nums)
-    #         code_items.append(num)
-    #
-    #     code_string = ''.join(str(item) for item in code_items)
-    #     self.code = code_string
-
-    # @property
-    # def token(self):
-    #     return self._generate_jwt_token()
-    #
-    # def _generate_jwt_token(self):
-    #
-    #     dt = datetime.now() + timedelta(days=60)
-    #     token = jwt.encode({
-    #         'id': self.pk,
-    #         'exp': int(dt.strftime('%s'))
-    #     }, settings.SECRET_KEY, algorithm='HS256')
-    #
-    #     return token.decode('utf-8')
-
 
 class Trader(models.Model):
     """Модель Трейдера"""
@@ -137,3 +111,13 @@ class Rating(models.Model):
                                related_name='ratings', verbose_name='Оцененный трейдер')
     user = models.ForeignKey(User, on_delete=models.SET_NULL,
                              null=True, verbose_name='Пользователь поставивший оценку')
+
+
+class Banner(models.Model):
+    """Баннер для сайта"""
+    image = models.ImageField(upload_to='banner', verbose_name='Фото баннера')
+
+    class Meta:
+        verbose_name = 'Баннер'
+        verbose_name_plural = 'Баннер'
+
