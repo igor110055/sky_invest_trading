@@ -17,4 +17,4 @@ simplejson==3.17.6
 gunicorn
 django-cors-headers
 django-otp==1.1.3
-
+qrcode==7.3.1
