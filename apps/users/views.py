@@ -2,14 +2,22 @@ from django.shortcuts import reverse
 from django.http import HttpResponseRedirect
 
 from rest_framework.viewsets import GenericViewSet
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
+from django_otp import devices_for_user
+from django_otp.plugins.otp_totp.models import TOTPDevice
+
+from djoser.views import TokenCreateView
+
 from .models import User, Document, DocumentImage, Trader, Banner
 from .serializers import TraderSerializer, DocumentSerializer,\
-    TraderDashboardSerializer, BannerSerializer
+    TraderDashboardSerializer, BannerSerializer, OTPTokenCreateSerializer,\
+    OTPUpdateSerializer
+from .utils import get_user_totp_device
 
 
 class TraderViewSet(GenericViewSet):
@@ -67,3 +75,44 @@ class BannerViewSet(GenericViewSet):
         banner = self.queryset.last()
         serializer = BannerSerializer(banner)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+# 2fa
+
+class TOTPCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        device = get_user_totp_device(user)
+        if not device:
+            device = user.totpdevice_set.create(confirmed=True)
+        url = device.config_url
+        return Response(url, status=status.HTTP_201_CREATED)
+
+
+class TOTPVerifyView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, token):
+        user = request.user
+        device = get_user_totp_device(user)
+        if not device == None and device.verify_token(token):
+            if not device.confirmed:
+                device.confirmed = True
+                device.save()
+            return Response(True, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class OTPTokenCreateView(TokenCreateView):
+    serializer_class = OTPTokenCreateSerializer
+
+
+class OTPSettingsView(GenericViewSet):
+    serializer_class = OTPUpdateSerializer
+
+    @action(methods=['get'], serializer_class=OTPUpdateSerializer, detail=False)
+    def get(self, request):
+        pass
+

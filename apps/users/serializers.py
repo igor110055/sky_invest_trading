@@ -1,7 +1,15 @@
 from rest_framework import serializers
+
+from django.contrib.auth import authenticate
+from django.conf import settings
+
 from drf_writable_nested.serializers import WritableNestedModelSerializer
+from django_otp import devices_for_user
+
+from djoser.serializers import TokenCreateSerializer
 
 from .models import User, Trader, Document, DocumentImage, Rating, Banner
+from .utils import get_user_totp_device
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -29,7 +37,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
 
         if User.objects.filter(phone_number=attrs['phone_number']).exists():
-            raise serializers.ValidationError({'phone_number]': 'Данный номер телефона уже был привязан'})
+            raise serializers.ValidationError({'phone_number': 'Данный номер телефона уже был привязан'})
         return super().validate(attrs)
 
 
@@ -104,3 +112,40 @@ class BannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Banner
         fields = ('image',)
+
+
+class OTPTokenCreateSerializer(TokenCreateSerializer):
+    two_fa_otp = serializers.IntegerField(allow_null=True, required=False)
+
+    def validate(self, attrs):
+        password = attrs.get("password")
+        params = {'email': attrs.get('email')}
+        self.user = authenticate(
+            request=self.context.get("request"), **params, password=password
+        )
+        if not self.user:
+            self.user = User.objects.filter(**params).first()
+            if self.user and not self.user.check_password(password):
+                self.fail("invalid_credentials")
+
+        if self.user and self.user.is_active:
+            device = get_user_totp_device(self.user)
+
+            if device and device.confirmed:
+                try:
+                    code = attrs['two_fa_otp']
+                    if not code:
+                        raise serializers.ValidationError({"messages": "Введите проверочный код Google authenticator"})
+                except KeyError as e:
+                    raise serializers.ValidationError({"messages": "Введите проверочный код Google authenticator"})
+                if not device.verify_token(attrs['two_fa_otp']):
+                    raise serializers.ValidationError({"messages": "Ошибка кода подтверждения Google"})
+            return attrs
+        self.fail("invalid_credentials")
+
+
+class OTPUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('otp_for_login', 'otp_for_withdraw')

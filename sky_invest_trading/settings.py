@@ -38,6 +38,10 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'corsheaders',
 
+    # 2fa
+    'django_otp',
+    'django_otp.plugins.otp_totp',
+
     # apps
     'apps.users.apps.UsersConfig',
     'apps.copytrade.apps.CopytradeConfig',
@@ -55,6 +59,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',

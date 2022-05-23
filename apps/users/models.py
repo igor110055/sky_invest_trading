@@ -16,6 +16,9 @@ class User(AbstractUser, PermissionsMixin):
 
     objects = UserManager()
 
+    otp_for_login = models.BooleanField(default=False, verbose_name='2fa аутентификация для входа')
+    otp_for_withdraw = models.BooleanField(default=False, verbose_name='2fa аутентификация для вывода')
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['phone_number', 'first_name', 'last_name']
 

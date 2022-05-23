@@ -8,4 +8,3 @@ from .models import User, Balance
 def create_balance_for_user(instance: User, created, **kwargs):
     if created:
         Balance.objects.create(user=instance)
-        
