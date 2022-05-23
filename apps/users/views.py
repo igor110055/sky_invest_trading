@@ -2,14 +2,20 @@ from django.shortcuts import reverse
 from django.http import HttpResponseRedirect
 
 from rest_framework.viewsets import GenericViewSet
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.mixins import UpdateModelMixin
+
+from djoser.views import TokenCreateView
 
 from .models import User, Document, DocumentImage, Trader, Banner
 from .serializers import TraderSerializer, DocumentSerializer,\
-    TraderDashboardSerializer, BannerSerializer
+    TraderDashboardSerializer, BannerSerializer, OTPTokenCreateSerializer,\
+    TOTPUpdateSerializer
+from .utils import get_user_totp_device
 
 
 class TraderViewSet(GenericViewSet):
@@ -67,3 +73,57 @@ class BannerViewSet(GenericViewSet):
         banner = self.queryset.last()
         serializer = BannerSerializer(banner)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+# 2fa
+
+class TOTPCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        device = get_user_totp_device(user)
+        if not device:
+            device = user.totpdevice_set.create(confirmed=True)
+        url = device.config_url
+        return Response(url, status=status.HTTP_201_CREATED)
+
+
+class TOTPVerifyView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, token):
+        user = request.user
+        device = get_user_totp_device(user)
+        if not device == None and device.verify_token(token):
+            if not device.confirmed:
+                device.confirmed = True
+                device.save()
+            return Response(True, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class OTPTokenCreateView(TokenCreateView):
+    serializer_class = OTPTokenCreateSerializer
+
+
+class TOTPUpdateViewSet(GenericViewSet):
+    serializer_class = TOTPUpdateSerializer
+    queryset = User.objects.filter(is_active=True)
+    permission_classes = [IsAuthenticated]
+
+    @action(methods=['get', 'patch'], serializer_class=TOTPUpdateSerializer, detail=False)
+    def update_otp(self, request, *args, **kwargs):
+        if request.method == 'GET':
+            serializer = self.get_serializer(request.user)
+            return Response(serializer.data)
+
+        device = get_user_totp_device(request.user)
+        if device and device.confirmed:
+            partial = kwargs.pop('partial', False)
+            serializer = self.get_serializer(data=request.data, partial=partial)
+            serializer.is_valid(raise_exception=True)
+            serializer.update(request.user, serializer.validated_data)
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        return Response({"message": "2fa аутентификация не активирована"})
+
