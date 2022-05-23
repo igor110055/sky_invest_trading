@@ -7,16 +7,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
-
-from django_otp import devices_for_user
-from django_otp.plugins.otp_totp.models import TOTPDevice
+from rest_framework.mixins import UpdateModelMixin
 
 from djoser.views import TokenCreateView
 
 from .models import User, Document, DocumentImage, Trader, Banner
 from .serializers import TraderSerializer, DocumentSerializer,\
     TraderDashboardSerializer, BannerSerializer, OTPTokenCreateSerializer,\
-    OTPUpdateSerializer
+    TOTPUpdateSerializer
 from .utils import get_user_totp_device
 
 
@@ -109,10 +107,23 @@ class OTPTokenCreateView(TokenCreateView):
     serializer_class = OTPTokenCreateSerializer
 
 
-class OTPSettingsView(GenericViewSet):
-    serializer_class = OTPUpdateSerializer
+class TOTPUpdateViewSet(GenericViewSet):
+    serializer_class = TOTPUpdateSerializer
+    queryset = User.objects.filter(is_active=True)
+    permission_classes = [IsAuthenticated]
 
-    @action(methods=['get'], serializer_class=OTPUpdateSerializer, detail=False)
-    def get(self, request):
-        pass
+    @action(methods=['get', 'patch'], serializer_class=TOTPUpdateSerializer, detail=False)
+    def update_otp(self, request, *args, **kwargs):
+        if request.method == 'GET':
+            serializer = self.get_serializer(request.user)
+            return Response(serializer.data)
+
+        device = get_user_totp_device(request.user)
+        if device and device.confirmed:
+            partial = kwargs.pop('partial', False)
+            serializer = self.get_serializer(data=request.data, partial=partial)
+            serializer.is_valid(raise_exception=True)
+            serializer.update(request.user, serializer.validated_data)
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        return Response({"message": "2fa аутентификация не активирована"})
 

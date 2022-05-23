@@ -5,8 +5,6 @@ from djoser.views import TokenDestroyView, TokenCreateView, UserViewSet
 from apps.users.views import TOTPVerifyView, TOTPCreateView, OTPTokenCreateView
 
 urlpatterns = [
-    path('totp/create/', TOTPCreateView.as_view(), name='totp-create'),
-    path('totp/login/<int:token>', TOTPVerifyView.as_view(), name='totp-login'),
     path('login/', OTPTokenCreateView.as_view(), name='login'),
     path('logout/', TokenDestroyView.as_view(), name='logout'),
     path('register/', UserViewSet.as_view({'post': 'create'}), name='register'),

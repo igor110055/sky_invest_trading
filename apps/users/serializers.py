@@ -129,22 +129,25 @@ class OTPTokenCreateSerializer(TokenCreateSerializer):
                 self.fail("invalid_credentials")
 
         if self.user and self.user.is_active:
-            device = get_user_totp_device(self.user)
+            if self.user.otp_for_login:
+                device = get_user_totp_device(self.user)
 
-            if device and device.confirmed:
-                try:
-                    code = attrs['two_fa_otp']
-                    if not code:
+                if device and device.confirmed:
+                    try:
+                        code = attrs['two_fa_otp']
+                        if not code:
+                            raise serializers.ValidationError({
+                                "messages": "Введите проверочный код Google authenticator"
+                            })
+                    except KeyError as e:
                         raise serializers.ValidationError({"messages": "Введите проверочный код Google authenticator"})
-                except KeyError as e:
-                    raise serializers.ValidationError({"messages": "Введите проверочный код Google authenticator"})
-                if not device.verify_token(attrs['two_fa_otp']):
-                    raise serializers.ValidationError({"messages": "Ошибка кода подтверждения Google"})
+                    if not device.verify_token(attrs['two_fa_otp']):
+                        raise serializers.ValidationError({"messages": "Ошибка кода подтверждения Google"})
             return attrs
         self.fail("invalid_credentials")
 
 
-class OTPUpdateSerializer(serializers.ModelSerializer):
+class TOTPUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
