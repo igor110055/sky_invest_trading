@@ -16,3 +16,5 @@ python-decouple==3.6
 simplejson==3.17.6
 gunicorn
 django-cors-headers
+django-otp==1.1.3
+
