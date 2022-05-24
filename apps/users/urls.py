@@ -7,6 +7,8 @@ from .views import *
 router = SimpleRouter()
 router.register('trader', TraderViewSet)
 router.register('totp', TOTPUpdateViewSet)
+router.register('', VerificationView)
+router.register('', InvestorDashboardView)
 
 urlpatterns = [
     path('totp/create/', TOTPCreateView.as_view(), name='totp-create'),

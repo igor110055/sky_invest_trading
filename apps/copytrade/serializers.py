@@ -15,7 +15,8 @@ class TradeGroupCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TradeGroup
-        fields = ('title', 'description', 'group_size', 'need_sum', 'min_entry_sum', 'max_entry_sum')
+        fields = ('title', 'description', 'group_size', 'need_sum', 'min_entry_sum', 'max_entry_sum',
+                  'start_date', 'end_date')
 
     def create(self, validated_data):
         validated_data['trader'] = self.context['request'].user.trader
@@ -23,6 +24,7 @@ class TradeGroupCreateSerializer(serializers.ModelSerializer):
 
 
 class MembershipSerializer(serializers.ModelSerializer):
+    group = TradeGroupSerializer()
 
     class Meta:
         model = Membership

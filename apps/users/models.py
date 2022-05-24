@@ -9,13 +9,15 @@ class User(AbstractUser, PermissionsMixin):
     phone_number = models.CharField(max_length=50, unique=True, verbose_name='Номер телефона', null=True, blank=True)
 
     code = models.CharField(max_length=6, verbose_name='Активационный код', blank=True)
-    tg_chat_id = models.CharField(max_length=30, blank=True, verbose_name='ID чата в телеграме ')
+    tg_chat_id = models.CharField(max_length=30, blank=True, verbose_name='ID чата в телеграмме ')
 
     is_active = models.BooleanField(default=False, verbose_name='Активный')
     is_trader = models.BooleanField(default=False, verbose_name='Трейдер')
+    verified = models.BooleanField(default=False, verbose_name='Верификация')
 
     objects = UserManager()
 
+    """Когда создается модель TOTP Device для этого юзера работает сигнал который ставит эти поля в true"""
     otp_for_login = models.BooleanField(default=False, verbose_name='2fa аутентификация для входа')
     otp_for_withdraw = models.BooleanField(default=False, verbose_name='2fa аутентификация для вывода')
 
@@ -34,7 +36,7 @@ class Trader(models.Model):
     """Модель Трейдера"""
     user = models.OneToOneField(User, on_delete=models.SET_NULL, related_name='trader',
                                 verbose_name='Пользователь', null=True)
-    verified = models.BooleanField(default=False, verbose_name='Верификация')
+    binance_api_key = models.CharField(max_length=100, blank=True, verbose_name='API ключ от аккаунта в binance')
 
     class Meta:
         verbose_name = 'Трейдер'
@@ -53,7 +55,7 @@ class Document(models.Model):
         ON_CONSIDERATION = 'on_consideration', 'на рассмотрении'
 
     status = models.CharField(max_length=25, choices=Status.choices, default=Status.ON_CONSIDERATION)
-    trader = models.OneToOneField(Trader, on_delete=models.SET_NULL, related_name='document', null=True)
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, related_name='document', null=True)
     first_name = models.CharField(max_length=100, verbose_name='Имя')
     last_name = models.CharField(max_length=100, verbose_name='Фамилия')
     birth_day = models.DateField(verbose_name='Дата рождения')

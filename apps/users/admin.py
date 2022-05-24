@@ -10,7 +10,7 @@ admin.site.register(Banner)
 
 @admin.register(Trader)
 class TraderAdmin(admin.ModelAdmin):
-    list_display = ['user', 'verified', 'id']
+    list_display = ['user', 'id']
     readonly_fields = ['user']
 
 

@@ -48,7 +48,7 @@ class TradeGroup(models.Model):
 
 class Membership(models.Model):
     """Модель членства инвесторов в TradeGroup"""
-    investor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    investor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='memberships')
     group = models.ForeignKey(TradeGroup, on_delete=models.SET_NULL, null=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     invested_sum = models.PositiveSmallIntegerField(verbose_name="Инвестированная сумма")

@@ -11,7 +11,7 @@ from .serializers import TradeGroupSerializer, MembershipSerializer, TradeGroupC
 from .tasks import withdraw_after_join_to_group
 
 from apps.actions.tasks import action_trade_group
-from apps.api.permissions import IsTrader
+from apps.api.permissions import IsTrader, IsVerified
 
 
 class TraderGroupViewSet(RetrieveModelMixin,
@@ -19,7 +19,7 @@ class TraderGroupViewSet(RetrieveModelMixin,
                          GenericViewSet):
     queryset = TradeGroup.objects.all()
     serializer_class = TradeGroupSerializer
-    permission_classes = [IsTrader]
+    permission_classes = [IsTrader, IsVerified]
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -31,12 +31,12 @@ class TraderGroupViewSet(RetrieveModelMixin,
         serializer.is_valid(raise_exception=True)
         serializer.save()
         headers = self.get_success_headers(serializer.data)
-        action_trade_group.delay(serializer.instance)
+        action_trade_group.delay(serializer.instance.id)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     @action(methods=['post', 'get'], detail=False,
             serializer_class=MembershipSerializer,
-            permission_classes=[IsAuthenticated])
+            permission_classes=[IsAuthenticated, IsVerified])
     def join(self, request):
         if request.method == 'GET':
             serializer = MembershipSerializer()

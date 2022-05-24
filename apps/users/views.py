@@ -7,21 +7,23 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.mixins import UpdateModelMixin
 
 from djoser.views import TokenCreateView
+
+from apps.copytrade.serializers import MembershipSerializer
+from apps.copytrade.models import Membership
 
 from .models import User, Document, DocumentImage, Trader, Banner
 from .serializers import TraderSerializer, DocumentSerializer,\
     TraderDashboardSerializer, BannerSerializer, OTPTokenCreateSerializer,\
-    TOTPUpdateSerializer
+    TOTPUpdateSerializer, UserSerializer
 from .utils import get_user_totp_device
 
 
 class TraderViewSet(GenericViewSet):
     model = Trader
     serializer_class = TraderSerializer
-    queryset = Trader.objects.filter(verified=True).select_related('document')
+    queryset = User.objects.filter(is_trader=True, verified=True).select_related('document')
     permission_classes = [IsAuthenticated]
 
     @action(methods=['get'], detail=True,
@@ -43,23 +45,7 @@ class TraderViewSet(GenericViewSet):
         serializer.save()
         request.user.is_trader = True
         request.user.save()
-        return HttpResponseRedirect(reverse('trader-apply_for_verification'))
-
-    @action(methods=['get', 'post'],
-            detail=False,
-            url_name='apply_for_verification',
-            serializer_class=DocumentSerializer)
-    def apply_for_verification(self, request):
-        """Подача документов на верификацию"""
-        if request.method == 'GET':
-            serializer = DocumentSerializer()
-            return Response(serializer.data)
-
-        serializer = DocumentSerializer(data=request.data, context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return HttpResponseRedirect(reverse('users-verification'))
 
 
 class BannerViewSet(GenericViewSet):
@@ -76,7 +62,6 @@ class BannerViewSet(GenericViewSet):
 
 
 # 2fa
-
 class TOTPCreateView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -126,4 +111,36 @@ class TOTPUpdateViewSet(GenericViewSet):
             serializer.update(request.user, serializer.validated_data)
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
         return Response({"message": "2fa аутентификация не активирована"})
+
+
+class VerificationView(GenericViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = Document.objects.all()
+    serializer_class = DocumentSerializer
+
+    @action(methods=['post'], detail=False)
+    def verification(self, request):
+        serializer = self.get_serializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class InvestorDashboardView(GenericViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = User.objects.with_roi_level_and_profit().filter(is_trader=False)
+    serializer_class = UserSerializer
+
+    @action(methods=['get'], detail=False)
+    def dashboard(self, request):
+        instance = self.queryset.get(id=request.user.id)
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+    @action(methods=['get'], detail=False, serializer_class=MembershipSerializer)
+    def groups(self, request):
+        instance = self.queryset.get(id=request.user.id)
+        serializer = MembershipSerializer(instance.memberships.prefetch_related('group'), many=True)
+        return Response(serializer.data)
 

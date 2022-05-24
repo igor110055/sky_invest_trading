@@ -1,5 +1,6 @@
 from django.contrib.auth.models import UserManager
 from django.contrib.auth.hashers import make_password
+from django.db import models
 
 
 class UserManager(UserManager):
@@ -25,3 +26,5 @@ class UserManager(UserManager):
         extra_fields.setdefault('is_active', True)
         return super().create_superuser(email, password, **extra_fields)
 
+    def with_roi_level_and_profit(self):
+        return self.annotate(roi_level=models.Value('0'), profit=models.Value('0'))

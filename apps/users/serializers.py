@@ -1,22 +1,24 @@
 from rest_framework import serializers
 
 from django.contrib.auth import authenticate
-from django.conf import settings
 
 from drf_writable_nested.serializers import WritableNestedModelSerializer
-from django_otp import devices_for_user
 
 from djoser.serializers import TokenCreateSerializer
 
+from apps.copytrade.serializers import TradeGroupSerializer
 from .models import User, Trader, Document, DocumentImage, Rating, Banner
 from .utils import get_user_totp_device
 
 
 class UserSerializer(serializers.ModelSerializer):
+    roi_level = serializers.CharField(max_length=10, allow_blank=True)
+    profit = serializers.CharField(max_length=10, allow_blank=True)
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'phone_number', 'first_name', 'last_name', 'last_login', 'date_joined')
+        fields = ('email', 'phone_number', 'first_name', 'last_name',
+                  'last_login', 'date_joined', 'roi_level', 'profit')
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -26,8 +28,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     """
     phone_number = serializers.RegexField(regex=r'^\+?1?\d{9,15}$',
                                           error_messages={'invalid phone': 'Неверный формат номера !'})
-
-    # token = serializers.CharField(max_length=255, read_only=True)
 
     class Meta:
         model = User
@@ -68,7 +68,7 @@ class DocumentSerializer(WritableNestedModelSerializer):
     def create(self, validated_data):
         images_data = validated_data.pop('images')
 
-        validated_data['trader'] = self.context['request'].user.trader
+        validated_data['user'] = self.context['request'].user
         document = Document.objects.create(**validated_data)
 
         for image in images_data:
@@ -81,7 +81,7 @@ class TraderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Trader
-        fields = ('user', )
+        fields = ('user', 'binance_api_key')
         read_only_fields = ['user']
 
     def create(self, validated_data):
