@@ -6,7 +6,6 @@ from drf_writable_nested.serializers import WritableNestedModelSerializer
 
 from djoser.serializers import TokenCreateSerializer
 
-from apps.copytrade.serializers import TradeGroupSerializer
 from .models import User, Trader, Document, DocumentImage, Rating, Banner
 from .utils import get_user_totp_device
 

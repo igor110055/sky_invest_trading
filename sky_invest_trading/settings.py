@@ -181,14 +181,18 @@ SIMPLE_JWT = {
 
 DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': 'user/password/reset/confirm/{uid}/{token}',
-    'ACTIVATION_URL': 'api/auth/activation/{uid}/{token}',
+    'ACTIVATION_URL': 'confirm-password/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
 
     'SERIALIZERS': {
         'user': 'apps.users.serializers.UserSerializer',
         # 'user_create': 'apps.users.serializers.UserRegisterSerializer',
         'current_user': 'apps.users.serializers.UserSerializer',
+    },
+    'EMAIL': {
+        'activation': 'apps.users.email.ActivationEmail'
     }
+
 }
 
 CORS_ORIGIN_ALLOW_ALL = True

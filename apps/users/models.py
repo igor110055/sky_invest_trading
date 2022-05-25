@@ -126,3 +126,11 @@ class Banner(models.Model):
         verbose_name = 'Баннер'
         verbose_name_plural = 'Баннер'
 
+
+class QA(models.Model):
+    question = models.CharField(max_length=255)
+    answer = models.TextField()
+
+    class Meta:
+        verbose_name = 'Q&A'
+        verbose_name_plural = 'Q&A'
