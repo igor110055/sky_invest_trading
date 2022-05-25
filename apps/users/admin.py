@@ -1,11 +1,12 @@
 from django.contrib import admin
 
-from .models import User, Trader, Document, DocumentImage, Balance, Banner
+from .models import User, Trader, Document, DocumentImage, Balance, Banner, QA
 
 admin.site.register(Document)
 admin.site.register(DocumentImage)
 admin.site.register(Balance)
 admin.site.register(Banner)
+admin.site.register(QA)
 
 
 @admin.register(Trader)

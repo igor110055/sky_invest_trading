@@ -11,12 +11,11 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from djoser.views import TokenCreateView
 
 from apps.copytrade.serializers import MembershipSerializer
-from apps.copytrade.models import Membership
 
-from .models import User, Document, DocumentImage, Trader, Banner
+from .models import User, Document, DocumentImage, Trader, Banner, QA
 from .serializers import TraderSerializer, DocumentSerializer,\
     TraderDashboardSerializer, BannerSerializer, OTPTokenCreateSerializer,\
-    TOTPUpdateSerializer, UserSerializer
+    TOTPUpdateSerializer, UserSerializer, FAQSerializer
 from .utils import get_user_totp_device
 
 
@@ -143,3 +142,13 @@ class InvestorDashboardView(GenericViewSet):
         serializer = MembershipSerializer(instance.memberships.prefetch_related('group'), many=True)
         return Response(serializer.data)
 
+
+class FAQView(GenericViewSet):
+    permission_classes = [AllowAny]
+    serializer_class = FAQSerializer
+    queryset = QA.objects.all()
+
+    @action(methods=['get'], detail=False)
+    def get(self, request):
+        serializer = self.get_serializer(self.queryset, many=True)
+        return Response(serializer.data)

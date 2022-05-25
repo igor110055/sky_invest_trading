@@ -134,3 +134,6 @@ class QA(models.Model):
     class Meta:
         verbose_name = 'Q&A'
         verbose_name_plural = 'Q&A'
+
+    def __str__(self):
+        return f"{self.question}"

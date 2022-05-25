@@ -6,7 +6,7 @@ from drf_writable_nested.serializers import WritableNestedModelSerializer
 
 from djoser.serializers import TokenCreateSerializer
 
-from .models import User, Trader, Document, DocumentImage, Rating, Banner
+from .models import User, Trader, Document, DocumentImage, Rating, Banner, QA
 from .utils import get_user_totp_device
 
 
@@ -151,3 +151,10 @@ class TOTPUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('otp_for_login', 'otp_for_withdraw')
+
+
+class FAQSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = QA
+        fields = '__all__'
