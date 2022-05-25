@@ -12,7 +12,7 @@ def create_balance_for_user(instance: User, created, **kwargs):
 
 
 @receiver(post_save, sender=TOTPDevice)
-def activate_totp_for_user(instance:TOTPDevice, created, **kwargs):
+def activate_totp_for_user(instance: TOTPDevice, created, **kwargs):
     if created:
         instance.user.otp_for_login = True
         instance.user.otp_for_withdraw = True

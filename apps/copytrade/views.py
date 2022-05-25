@@ -17,7 +17,7 @@ from apps.api.permissions import IsTrader, IsVerified
 class TraderGroupViewSet(RetrieveModelMixin,
                          ListModelMixin,
                          GenericViewSet):
-    queryset = TradeGroup.objects.all()
+    queryset = TradeGroup.objects.filter(status=TradeGroup.Status.RECRUITED)
     serializer_class = TradeGroupSerializer
     permission_classes = [IsTrader, IsVerified]
 
@@ -47,6 +47,13 @@ class TraderGroupViewSet(RetrieveModelMixin,
         serializer.save()
         withdraw_after_join_to_group.delay(serializer.instance)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    # @action(method=['post'], detail=True)
+    # def withdraw(self, request):
+    #     """Вывод средств на binance"""
+    #     instance = self.get_object()
+    #     if request.user.is_trader and request.user.trader == instance.trader and instance:
+    #         pass
 
     @staticmethod
     def get_success_headers(data):

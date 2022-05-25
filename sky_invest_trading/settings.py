@@ -180,8 +180,8 @@ SIMPLE_JWT = {
 }
 
 DJOSER = {
-    'PASSWORD_RESET_CONFIRM_URL': 'user/password/reset/confirm/{uid}/{token}',
-    'ACTIVATION_URL': 'confirm-password/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': 'confirm-password?token={token}&id={id}',
+    'ACTIVATION_URL': 'activated?token={token}&id={uid}',
     'SEND_ACTIVATION_EMAIL': True,
 
     'SERIALIZERS': {
@@ -190,7 +190,8 @@ DJOSER = {
         'current_user': 'apps.users.serializers.UserSerializer',
     },
     'EMAIL': {
-        'activation': 'apps.users.email.ActivationEmail'
+        'activation': 'apps.users.email.ActivationEmail',
+        'password_reset': 'apps.users.email.PasswordResetEmail'
     }
 
 }
