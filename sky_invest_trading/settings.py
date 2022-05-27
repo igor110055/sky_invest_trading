@@ -180,7 +180,7 @@ SIMPLE_JWT = {
 }
 
 DJOSER = {
-    'PASSWORD_RESET_CONFIRM_URL': 'confirm-password?token={token}&id={id}',
+    'PASSWORD_RESET_CONFIRM_URL': 'confirm-password?token={token}&id={uid}',
     'ACTIVATION_URL': 'activated?token={token}&id={uid}',
     'SEND_ACTIVATION_EMAIL': True,
 
@@ -230,3 +230,7 @@ YOOMONEY_SECRET = config('YOOMONEY_SECRET')
 
 
 CELERY_BROKER_URL = 'amqp://guest:guest@rabbitmq:5672/'
+
+
+BINANCE_API = config('BINANCE_API')
+BINANCE_SECRET = config('BINANCE_SECRET')
