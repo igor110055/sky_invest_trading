@@ -9,9 +9,10 @@ from rest_framework.settings import api_settings
 from .models import TradeGroup
 from .serializers import TradeGroupSerializer, MembershipSerializer, TradeGroupCreateSerializer
 from .tasks import withdraw_after_join_to_group
+from .services import BinanceAPI
 
 from apps.actions.tasks import action_trade_group
-from apps.api.permissions import IsTrader, IsVerified
+from apps.api.permissions import IsTrader, IsVerified, IsGroupOwner
 
 
 class TraderGroupViewSet(RetrieveModelMixin,
@@ -45,15 +46,15 @@ class TraderGroupViewSet(RetrieveModelMixin,
         serializer = MembershipSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        withdraw_after_join_to_group.delay(serializer.instance)
+        withdraw_after_join_to_group.delay(serializer.instance.pk)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    # @action(method=['post'], detail=True)
-    # def withdraw(self, request):
-    #     """Вывод средств на binance"""
-    #     instance = self.get_object()
-    #     if request.user.is_trader and request.user.trader == instance.trader and instance:
-    #         pass
+    @action(methods=['post'], detail=True, permission_classes=[IsGroupOwner])
+    def withdraw(self, request, pk):
+        """Вывод средств на binance"""
+        binance_api = BinanceAPI()
+        instance = self.get_object()
+        return binance_api.withdraw_from_group(instance)
 
     @staticmethod
     def get_success_headers(data):

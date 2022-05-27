@@ -22,7 +22,7 @@ class User(AbstractUser, PermissionsMixin):
     otp_for_withdraw = models.BooleanField(default=False, verbose_name='2fa аутентификация для вывода')
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['phone_number', 'first_name', 'last_name']
+    REQUIRED_FIELDS = ['phone_number', 'first_name', 'last_name', 'is_trader']
 
     class Meta:
         verbose_name = 'Пользователь'
@@ -37,6 +37,7 @@ class Trader(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, related_name='trader',
                                 verbose_name='Пользователь', null=True)
     binance_api_key = models.CharField(max_length=100, blank=True, verbose_name='API ключ от аккаунта в binance')
+    binance_secret_key = models.CharField(max_length=100, blank=True, verbose_name='SECRET ключ от аккаунта binance')
 
     class Meta:
         verbose_name = 'Трейдер'

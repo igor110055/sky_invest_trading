@@ -34,7 +34,8 @@ class TradeGroup(models.Model):
     min_entry_sum = models.PositiveSmallIntegerField(verbose_name='Минимальная сумма входа')
     max_entry_sum = models.PositiveSmallIntegerField(verbose_name='Максимальная сумма входа')
 
-    status = models.CharField(max_length=20, choices=Status.choices, verbose_name='Статус группы')
+    status = models.CharField(max_length=20, choices=Status.choices,
+                              default=Status.RECRUITED, verbose_name='Статус группы')
     start_date = models.DateTimeField(verbose_name='Дата начала')
     end_date = models.DateTimeField(verbose_name='Дата окончания')
 
@@ -43,7 +44,7 @@ class TradeGroup(models.Model):
         verbose_name_plural = 'Группы трейдеров'
 
     def __str__(self):
-        return f"{self.trader} : {self.title}"
+        return f"{self.trader} : {self.title} : {self.id}"
 
 
 class Membership(models.Model):
