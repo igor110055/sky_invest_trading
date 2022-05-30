@@ -17,7 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('email', 'phone_number', 'first_name', 'last_name',
-                  'last_login', 'date_joined', 'roi_level', 'profit')
+                  'last_login', 'date_joined', 'roi_level', 'profit', 'is_trader')
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
