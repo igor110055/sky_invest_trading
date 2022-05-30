@@ -54,4 +54,9 @@ class Membership(models.Model):
     date_joined = models.DateTimeField(auto_now_add=True)
     invested_sum = models.PositiveSmallIntegerField(verbose_name="Инвестированная сумма")
 
+    class Meta:
+        verbose_name = 'Членство в группе'
+        verbose_name_plural = 'Членства в группах'
 
+    def __str__(self):
+        return f'{self.group} : {self.investor}'

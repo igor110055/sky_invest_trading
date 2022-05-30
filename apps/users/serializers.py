@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
 from djoser.serializers import TokenCreateSerializer
+from django_otp.plugins.otp_totp.models import TOTPDevice
 
 from .models import User, Trader, Document, DocumentImage, Rating, Banner, QA
 from .utils import get_user_totp_device
@@ -158,3 +159,11 @@ class FAQSerializer(serializers.ModelSerializer):
     class Meta:
         model = QA
         fields = '__all__'
+
+
+class TOTPVerifyTokenSerializer(serializers.ModelSerializer):
+    token = serializers.CharField(max_length=6)
+
+    class Meta:
+        model = TOTPDevice
+        fields = ('token', )

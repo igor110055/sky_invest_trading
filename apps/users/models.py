@@ -31,6 +31,11 @@ class User(AbstractUser, PermissionsMixin):
     def __str__(self):
         return f'{self.email}'
 
+    def otp_off(self):
+        self.otp_for_withdraw = False
+        self.otp_for_login = False
+        self.save()
+
 
 class Trader(models.Model):
     """Модель Трейдера"""

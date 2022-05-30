@@ -9,13 +9,14 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from djoser.views import TokenCreateView
+from django_otp.plugins.otp_totp.models import TOTPDevice
 
 from apps.copytrade.serializers import MembershipSerializer
 
 from .models import User, Document, DocumentImage, Trader, Banner, QA
 from .serializers import TraderSerializer, DocumentSerializer,\
     TraderDashboardSerializer, BannerSerializer, OTPTokenCreateSerializer,\
-    TOTPUpdateSerializer, UserSerializer, FAQSerializer
+    TOTPVerifyTokenSerializer, TOTPUpdateSerializer, UserSerializer, FAQSerializer
 from .utils import get_user_totp_device
 
 
@@ -73,40 +74,11 @@ class TOTPCreateView(APIView):
         return Response(url, status=status.HTTP_201_CREATED)
 
 
-class TOTPDeleteView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        user = request.user
-        user.otp_off()
-        device = get_user_totp_device(user)
-        if device:
-            device.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class TOTPVerifyView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request, token):
-        user = request.user
-
-        device = get_user_totp_device(user)
-        if not device == None and device.verify_token(token):
-            if not device.confirmed:
-                device.confirmed = True
-                device.save()
-            return Response(True, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-#
-# class TOTPViewSet(GenericViewSet):
-
 class OTPTokenCreateView(TokenCreateView):
     serializer_class = OTPTokenCreateSerializer
 
 
-class TOTPUpdateViewSet(GenericViewSet):
-    serializer_class = TOTPUpdateSerializer
+class TOTPViewSet(GenericViewSet):
     queryset = User.objects.filter(is_active=True)
     permission_classes = [IsAuthenticated]
 
@@ -124,6 +96,35 @@ class TOTPUpdateViewSet(GenericViewSet):
             serializer.update(request.user, serializer.validated_data)
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
         return Response({"message": "2fa аутентификация не активирована"})
+
+    @action(methods=['post'], serializer_class=TOTPVerifyTokenSerializer,
+            detail=False)
+    def verify(self, request):
+        serializer = TOTPVerifyTokenSerializer(data=request.data)
+        user = request.user
+
+        device = get_user_totp_device(user)
+        if not device == None and device.verify_token(serializer.validated_data['token']):
+            if not device.confirmed:
+                device.confirmed = True
+                device.save()
+            return Response(True, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['post'], detail=False, serializer_class=TOTPVerifyTokenSerializer)
+    def delete(self, request):
+        serializer = TOTPVerifyTokenSerializer(data=request.data)
+        user = request.user
+        device = get_user_totp_device(user)
+
+        if device:
+            if device.verify_token(serializer.validated_data['token']):
+                user.otp_off()
+                device.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response({'message': 'Ошибка кода подтверждения Google'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 
 class VerificationView(GenericViewSet):

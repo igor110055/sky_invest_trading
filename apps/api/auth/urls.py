@@ -1,8 +1,7 @@
-from django.urls import path, re_path
+from django.urls import path
 
-from djoser.views import TokenDestroyView, TokenCreateView, UserViewSet
-
-from apps.users.views import TOTPVerifyView, TOTPCreateView, OTPTokenCreateView
+from djoser.views import TokenDestroyView, UserViewSet
+from apps.users.views import OTPTokenCreateView
 
 urlpatterns = [
     path('login/', OTPTokenCreateView.as_view(), name='login'),
