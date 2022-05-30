@@ -81,7 +81,7 @@ class TraderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Trader
-        fields = ('user', 'binance_api_key')
+        fields = ('user', 'binance_api_key', 'binance_secret_key')
         read_only_fields = ['user']
 
     def create(self, validated_data):

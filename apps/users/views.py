@@ -126,7 +126,6 @@ class TOTPViewSet(GenericViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-
 class VerificationView(GenericViewSet):
     permission_classes = [IsAuthenticated]
     queryset = Document.objects.all()
