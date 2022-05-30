@@ -68,9 +68,21 @@ class TOTPCreateView(APIView):
         user = request.user
         device = get_user_totp_device(user)
         if not device:
-            device = user.totpdevice_set.create(confirmed=True)
+            device = user.totpdevice_set.create(confirmed=False)
         url = device.config_url
         return Response(url, status=status.HTTP_201_CREATED)
+
+
+class TOTPDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        user.otp_off()
+        device = get_user_totp_device(user)
+        if device:
+            device.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class TOTPVerifyView(APIView):
@@ -78,6 +90,7 @@ class TOTPVerifyView(APIView):
 
     def post(self, request, token):
         user = request.user
+
         device = get_user_totp_device(user)
         if not device == None and device.verify_token(token):
             if not device.confirmed:
@@ -85,7 +98,8 @@ class TOTPVerifyView(APIView):
                 device.save()
             return Response(True, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
-
+#
+# class TOTPViewSet(GenericViewSet):
 
 class OTPTokenCreateView(TokenCreateView):
     serializer_class = OTPTokenCreateSerializer
@@ -127,7 +141,7 @@ class VerificationView(GenericViewSet):
 
 class InvestorDashboardView(GenericViewSet):
     permission_classes = [IsAuthenticated]
-    queryset = User.objects.with_roi_level_and_profit().filter(is_trader=False)
+    queryset = User.objects.with_roi_level_and_profit().filter(is_active=True)
     serializer_class = UserSerializer
 
     @action(methods=['get'], detail=False)
