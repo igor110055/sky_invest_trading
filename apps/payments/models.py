@@ -46,3 +46,15 @@ class PaymentOrderTether(models.Model):
     class Meta:
         verbose_name = 'Платеж tether'
         verbose_name_plural = 'Платежи tether'
+
+
+class Withdraw(models.Model):
+
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    address = models.CharField(max_length=250, verbose_name='адрес для вывода')
+    amount = models.PositiveSmallIntegerField(verbose_name='Сумма')
+    created = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+
+    class Meta:
+        verbose_name = 'Вывод'
+        verbose_name_plural = 'Выводы'

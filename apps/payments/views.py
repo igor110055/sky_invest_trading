@@ -6,8 +6,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 
-from .models import PaymentOrder, PaymentOrderTether
-from .serializers import PaymentOrderSerializer, PaymentOrderTetherSerializer
+from .models import PaymentOrder, PaymentOrderTether, Withdraw
+from .serializers import PaymentOrderSerializer, PaymentOrderTetherSerializer, WithdrawSerializer
 from .mixins import YooMoneyMixin
 from .tasks import yomoney_payment_handler
 
@@ -69,5 +69,20 @@ class PaymentOrderTetherViewSet(GenericViewSet):
         serializer.is_valid(raise_exceptions=True)
         serializer.save()
 
-        return self.client.check_tx_id(serializer.validated_data['tx_id'])
+        return self.client.check_tx_id(serializer.instance)
+
+
+class WithdrawViewSet(GenericViewSet):
+    queryset = Withdraw.objects.all()
+    permission_classes = [IsAuthenticated]
+    serializer_class = WithdrawSerializer
+    client = BinanceAPI()
+
+    def create(self, request):
+        """Вывод средств"""
+        serializer = self.get_serializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exceptions=True)
+        serializer.save()
+
+        return self.client.withdraw(serializer.instance)
 

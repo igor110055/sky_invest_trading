@@ -1,13 +1,14 @@
 from rest_framework import serializers
 
-from .models import PaymentOrder, PaymentOrderTether
+from .models import PaymentOrder, PaymentOrderTether, Withdraw
 
 
 class PaymentOrderSerializer(serializers.ModelSerializer):
+    paid = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = PaymentOrder
-        fields = ('amount',)
+        fields = ('amount', 'paid', 'created')
 
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
@@ -24,3 +25,20 @@ class PaymentOrderTetherSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
         return super().create(validated_data)
+
+
+class WithdrawSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Withdraw
+        fields = ('address', 'amount', 'created')
+
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user
+        return super().create(validated_data)
+
+    def validate(self, attrs):
+        user_balance = self.context['request'].user.balance
+        if user_balance.balance < attrs.get('amount'):
+            raise serializers.ValidationError({'message': 'Недостаточно средств на балансе'})
+        return super().validate(attrs)

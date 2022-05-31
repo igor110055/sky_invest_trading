@@ -18,7 +18,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', cast=bool)
 
-ALLOWED_HOSTS = ['trusttrade.pro', 'localhost']
+ALLOWED_HOSTS = ['trusttrade.pro', '127.0.0.1']
 
 
 # Application definition
@@ -217,7 +217,12 @@ LOGGING = {
             'level': 'WARNING',
             'class': 'logging.FileHandler',
             'filename': 'logs/payment_tether'
-        }
+        },
+        'withdraw': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/withdraw'
+        },
     },
     'loggers': {
         'register': {
@@ -229,7 +234,12 @@ LOGGING = {
             'level': 'WARNING',
             'handlers': ['payment_tether'],
             'propagate': True
-        }
+        },
+        'withdraw': {
+            'level': 'WARNING',
+            'handlers': ['withdraw'],
+            'propagate': True
+        },
     }
 }
 

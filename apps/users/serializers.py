@@ -37,7 +37,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
 
         if User.objects.filter(phone_number=attrs['phone_number']).exists():
-            raise serializers.ValidationError({'phone_number': 'Данный номер телефона уже был привязан'})
+            raise serializers.ValidationError({'message': 'Данный номер телефона уже был привязан'})
         return super().validate(attrs)
 
 
@@ -137,13 +137,13 @@ class OTPTokenCreateSerializer(TokenCreateSerializer):
                         code = attrs['two_fa_otp']
                         if not code:
                             raise serializers.ValidationError({
-                                "messages": "Введите проверочный код Google authenticator"
+                                "message": "Введите проверочный код Google authenticator"
                             })
                     except KeyError as e:
-                        raise serializers.ValidationError({"messages": "Введите проверочный код Google authenticator"})
+                        raise serializers.ValidationError({"message": "Введите проверочный код Google authenticator"})
                     if not device.verify_token(attrs['two_fa_otp']):
-                        raise serializers.ValidationError({"messages": "Ошибка кода подтверждения Google"})
-            return attrs
+                        raise serializers.ValidationError({"message": "Ошибка кода подтверждения Google"})
+            return super().validate(attrs)
         self.fail("invalid_credentials")
 
 
