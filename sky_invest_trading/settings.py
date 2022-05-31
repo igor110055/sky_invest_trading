@@ -244,3 +244,5 @@ CELERY_BROKER_URL = 'amqp://guest:guest@rabbitmq:5672/'
 
 BINANCE_API = config('BINANCE_API')
 BINANCE_SECRET = config('BINANCE_SECRET')
+
+CSRF_TRUSTED_ORIGINS = ['trusttrade.pro']
