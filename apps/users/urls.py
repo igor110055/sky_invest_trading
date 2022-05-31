@@ -11,7 +11,7 @@ router.register('', VerificationView)
 router.register('', InvestorDashboardView)
 
 urlpatterns = [
-    path('totp/create/', TOTPCreateView.as_view(), name='totp-create'),
+    # path('totp/create/', TOTPCreateView.as_view(), name='totp-create'),
     # path('totp/verify/', TOTPVerifyView.as_view(), name='totp-verify'),
     # path('totp/delete/', TOTPDeleteView.as_view(), name='totp-delete'),
     # re_path(r'^totp/login/(?P<token>[0-9]{6})/$', TOTPVerifyView.as_view(), name='totp-login')

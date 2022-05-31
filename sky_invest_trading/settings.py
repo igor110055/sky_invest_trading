@@ -18,7 +18,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', cast=bool)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['trusttrade.pro', 'localhost']
 
 
 # Application definition
@@ -212,12 +212,22 @@ LOGGING = {
             'level': 'INFO',
             'class': 'logging.FileHandler',
             'filename': 'logs/register.log'
+        },
+        'payment_tether': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/payment_tether'
         }
     },
     'loggers': {
         'register': {
             'level': 'INFO',
             'handlers': ['register'],
+            'propagate': True
+        },
+        'payment_tether': {
+            'level': 'WARNING',
+            'handlers': ['payment_tether'],
             'propagate': True
         }
     }

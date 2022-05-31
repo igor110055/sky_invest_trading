@@ -5,6 +5,7 @@ from .views import *
 
 router = SimpleRouter()
 router.register('', PaymentOrderViewSet)
+router.register('tether', PaymentOrderTetherViewSet)
 
 urlpatterns = []
 

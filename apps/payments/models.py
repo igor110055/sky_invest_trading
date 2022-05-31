@@ -8,7 +8,7 @@ from uuid import uuid4
 class PaymentOrder(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True,
                              related_name='payments', verbose_name='Пользователь')
-    payment_order_id = models.UUIDField(default=uuid4, verbose_name='Идентификатор платежа')
+    payment_order_id = models.UUIDField(default=uuid4, verbose_name='Идентификатор платежа (Yomoney)')
     amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Сумма')
     paid = models.BooleanField(default=False)
 
@@ -33,3 +33,16 @@ class Currency(models.Model):
 
     def __str__(self):
         return f"{self.name} : {self.value}"
+
+
+class PaymentOrderTether(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='tether_payments', null=True)
+    tx_id = models.CharField(max_length=260, blank=True, verbose_name='ID транзакции в binance')
+    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Сумма')
+    paid = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True, verbose_name='Создано')
+    updated = models.DateTimeField(auto_now=True, verbose_name='Обновлено')
+
+    class Meta:
+        verbose_name = 'Платеж tether'
+        verbose_name_plural = 'Платежи tether'

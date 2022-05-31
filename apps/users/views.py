@@ -23,13 +23,13 @@ from .utils import get_user_totp_device
 class TraderViewSet(GenericViewSet):
     model = Trader
     serializer_class = TraderSerializer
-    queryset = User.objects.filter(is_trader=True, verified=True).select_related('document')
+    queryset = Trader.objects.all().select_related('user__document')
     permission_classes = [IsAuthenticated]
 
     @action(methods=['get'], detail=True,
             serializer_class=TraderDashboardSerializer,
             url_name='trader_info')
-    def trader_info(self, request, *args, **kwargs):
+    def trader_info(self, request, pk, **kwargs):
         instance = self.get_object()  # TODO: сделать запрос со статистикой
         serializer = TraderDashboardSerializer(instance)
         return Response(serializer.data)
@@ -62,17 +62,6 @@ class BannerViewSet(GenericViewSet):
 
 
 # 2fa
-class TOTPCreateView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        user = request.user
-        device = get_user_totp_device(user)
-        if not device:
-            device = user.totpdevice_set.create(confirmed=False)
-        url = device.config_url
-        return Response(url, status=status.HTTP_201_CREATED)
-
 
 class OTPTokenCreateView(TokenCreateView):
     serializer_class = OTPTokenCreateSerializer
@@ -81,6 +70,14 @@ class OTPTokenCreateView(TokenCreateView):
 class TOTPViewSet(GenericViewSet):
     queryset = User.objects.filter(is_active=True)
     permission_classes = [IsAuthenticated]
+
+    def create(self, request):
+        user = request.user
+        device = get_user_totp_device(user)
+        if not device:
+            device = user.totpdevice_set.create(confirmed=False)
+        url = device.config_url
+        return Response(url, status=status.HTTP_201_CREATED)
 
     @action(methods=['get', 'patch'], serializer_class=TOTPUpdateSerializer, detail=False)
     def update_otp(self, request, *args, **kwargs):
