@@ -2,21 +2,20 @@ from django.shortcuts import reverse
 from django.http import HttpResponseRedirect
 
 from rest_framework.viewsets import GenericViewSet
-from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from djoser.views import TokenCreateView
-from django_otp.plugins.otp_totp.models import TOTPDevice
 
 from apps.copytrade.serializers import MembershipSerializer
 
-from .models import User, Document, DocumentImage, Trader, Banner, QA
+from .models import User, Document, Trader, Banner, QA
 from .serializers import TraderSerializer, DocumentSerializer,\
     TraderDashboardSerializer, BannerSerializer, OTPTokenCreateSerializer,\
-    TOTPVerifyTokenSerializer, TOTPUpdateSerializer, UserSerializer, FAQSerializer
+    TOTPVerifyTokenSerializer, TOTPUpdateSerializer, UserSerializer, \
+    FAQSerializer, UserProfileSerializer, UserChangePasswordSerializer
 from .utils import get_user_totp_device
 
 
@@ -62,7 +61,6 @@ class BannerViewSet(GenericViewSet):
 
 
 # 2fa
-
 class OTPTokenCreateView(TokenCreateView):
     serializer_class = OTPTokenCreateSerializer
 
@@ -163,3 +161,31 @@ class FAQView(GenericViewSet):
     def get(self, request):
         serializer = self.get_serializer(self.queryset, many=True)
         return Response(serializer.data)
+
+
+class UserProfileViewSet(GenericViewSet):
+    queryset = User.objects.filter(is_active=True)
+    permission_classes = [IsAuthenticated]
+
+    @action(methods=['get', 'patch'], detail=False, serializer_class=UserProfileSerializer)
+    def profile(self, request):
+        if request.method == 'GET':
+            serializer = UserProfileSerializer(request.user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = UserProfileSerializer(request.user, data=request.data, partial=True, context={'request': request})
+        self.perform_update(serializer)
+        return Response(status=status.HTTP_202_ACCEPTED)
+
+    @action(methods=['get', 'patch'], detail=False, serializer_class=UserChangePasswordSerializer)
+    def change_password(self, request):
+        if request.method == 'GET':
+            serializer = UserChangePasswordSerializer()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = UserChangePasswordSerializer(request.user, data=request.data, partial=True, context={'request': request})
+        self.perform_update(serializer)
+        return Response(status=status.HTTP_202_ACCEPTED)
+
+    @staticmethod
+    def perform_update(serializer):
+        serializer.is_valid(raise_exception=True)
+        serializer.save()

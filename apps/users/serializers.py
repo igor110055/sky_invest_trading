@@ -20,25 +20,25 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('email', 'phone_number', 'first_name', 'last_name',
                   'last_login', 'date_joined', 'roi_level', 'profit', 'is_trader')
 
-
-class UserRegisterSerializer(serializers.ModelSerializer):
-    """
-    Создает нового пользователя.
-    Все поля обязательны.
-    """
-    phone_number = serializers.RegexField(regex=r'^\+?1?\d{9,15}$',
-                                          error_messages={'invalid phone': 'Неверный формат номера !'})
-
-    class Meta:
-        model = User
-        fields = ('username', 'email', 'phone_number', 'first_name',
-                  'last_name', 'password')
-
-    def validate(self, attrs):
-
-        if User.objects.filter(phone_number=attrs['phone_number']).exists():
-            raise serializers.ValidationError({'message': 'Данный номер телефона уже был привязан'})
-        return super().validate(attrs)
+#
+# class UserRegisterSerializer(serializers.ModelSerializer):
+#     """
+#     Создает нового пользователя.
+#     Все поля обязательны.
+#     """
+#     phone_number = serializers.RegexField(regex=r'^\+?1?\d{9,15}$',
+#                                           error_messages={'invalid phone': 'Неверный формат номера !'})
+#
+#     class Meta:
+#         model = User
+#         fields = ('username', 'email', 'phone_number', 'first_name',
+#                   'last_name', 'password')
+#
+#     def validate(self, attrs):
+#
+#         if User.objects.filter(phone_number=attrs['phone_number']).exists():
+#             raise serializers.ValidationError({'message': 'Данный номер телефона уже был привязан'})
+#         return super().validate(attrs)
 
 
 class RatingSerializer(serializers.ModelSerializer):
@@ -147,18 +147,18 @@ class OTPTokenCreateSerializer(TokenCreateSerializer):
         self.fail("invalid_credentials")
 
 
-class TOTPUpdateSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        fields = ('otp_for_login', 'otp_for_withdraw')
-
-
 class FAQSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = QA
         fields = '__all__'
+
+
+class TOTPUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('otp_for_login', 'otp_for_withdraw')
 
 
 class TOTPVerifyTokenSerializer(serializers.ModelSerializer):
@@ -167,3 +167,33 @@ class TOTPVerifyTokenSerializer(serializers.ModelSerializer):
     class Meta:
         model = TOTPDevice
         fields = ('token', )
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('email', 'phone_number', 'first_name', 'last_name')
+
+
+class UserChangePasswordSerializer(serializers.ModelSerializer):
+    old_password = serializers.CharField(max_length=128, style={"input_type": "password"}, required=True)
+    new_password = serializers.CharField(max_length=128, style={"input_type": "password"}, required=True)
+    new_password2 = serializers.CharField(max_length=128, style={"input_type": "password"}, required=True)
+
+    class Meta:
+        model = User
+        fields = ('old_password', 'new_password', 'new_password2')
+
+    def validate(self, attrs):
+        user = self.context['request'].user
+        if not user.check_password(attrs['old_password']):
+            raise serializers.ValidationError({'message': 'Введен неверный пароль'})
+        if attrs['new_password'] != attrs['new_password2']:
+            raise serializers.ValidationError({'message': 'Пароли не совпадают'})
+        return super().validate(attrs)
+
+    def update(self, instance, validated_data):
+        instance.set_password(validated_data['new_password'])
+        instance.save()
+        return instance

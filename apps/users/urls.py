@@ -9,6 +9,7 @@ router.register('trader', TraderViewSet)
 router.register('totp', TOTPViewSet)
 router.register('', VerificationView)
 router.register('', InvestorDashboardView)
+router.register('', UserProfileViewSet)
 
 urlpatterns = [
     # path('totp/create/', TOTPCreateView.as_view(), name='totp-create'),
