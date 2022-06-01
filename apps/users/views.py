@@ -22,7 +22,7 @@ from .serializers import TraderSerializer, DocumentSerializer,\
     TraderDashboardSerializer, BannerSerializer, OTPTokenCreateSerializer,\
     TOTPVerifyTokenSerializer, TOTPUpdateSerializer, UserSerializer, \
     FAQSerializer, UserProfileSerializer, UserChangePasswordSerializer,\
-    UserPaymentsHistorySerializer
+    UserPaymentsHistorySerializer, RatingSerializer
 from .utils import get_user_totp_device
 
 
@@ -52,6 +52,14 @@ class TraderViewSet(GenericViewSet):
         request.user.is_trader = True
         request.user.save()
         return HttpResponseRedirect(reverse('users-verification'))
+
+    @action(methods=['post'], detail=True, serializer_class=RatingSerializer)
+    def rate(self, request):
+        instance = self.get_object()
+        serializer = RatingSerializer(data=request.data, context={'request': request, 'trader': instance})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class BannerViewSet(GenericViewSet):

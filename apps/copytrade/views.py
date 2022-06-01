@@ -13,6 +13,7 @@ from .services import BinanceAPI
 
 from apps.actions.tasks import action_trade_group
 from apps.api.permissions import IsTrader, IsVerified, IsGroupOwner
+from apps.telegram_bot.tasks import notify_trader
 
 
 class TraderGroupViewSet(RetrieveModelMixin,
@@ -46,7 +47,8 @@ class TraderGroupViewSet(RetrieveModelMixin,
         serializer = MembershipSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        withdraw_after_join_to_group.delay(serializer.instance.pk)
+        withdraw_after_join_to_group.delay(serializer.instance.id)
+        notify_trader.delay(serializer.instance.id)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(methods=['post'], detail=True, permission_classes=[IsGroupOwner])

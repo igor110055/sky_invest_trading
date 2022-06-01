@@ -10,8 +10,7 @@ from django_otp.plugins.otp_totp.models import TOTPDevice
 from .models import User, Trader, Document, DocumentImage, Rating, Banner, QA
 from .utils import get_user_totp_device
 
-from apps.payments.serializers import PaymentOrderSerializer, WithdrawSerializer, PaymentOrderTetherSerializer
-from apps.copytrade.serializers import MembershipSerializer
+from apps.payments.serializers import PaymentOrderSerializer, PaymentOrderTetherSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -28,7 +27,12 @@ class RatingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Rating
-        fields = '__all__'
+        fields = ('star',)
+
+    def validate(self, attrs):
+        if self.context['request'].user == self.context['instance'].user:
+            raise serializers.ValidationError({'message': 'Вы не можете оценивать себя'})
+        return super().validate(attrs)
 
 
 class DocumentImageSerializer(serializers.ModelSerializer):
