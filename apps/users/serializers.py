@@ -10,6 +10,9 @@ from django_otp.plugins.otp_totp.models import TOTPDevice
 from .models import User, Trader, Document, DocumentImage, Rating, Banner, QA
 from .utils import get_user_totp_device
 
+from apps.payments.serializers import PaymentOrderSerializer, WithdrawSerializer, PaymentOrderTetherSerializer
+from apps.copytrade.serializers import MembershipSerializer
+
 
 class UserSerializer(serializers.ModelSerializer):
     roi_level = serializers.CharField(max_length=10, allow_blank=True)
@@ -19,26 +22,6 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('email', 'phone_number', 'first_name', 'last_name',
                   'last_login', 'date_joined', 'roi_level', 'profit', 'is_trader')
-
-#
-# class UserRegisterSerializer(serializers.ModelSerializer):
-#     """
-#     Создает нового пользователя.
-#     Все поля обязательны.
-#     """
-#     phone_number = serializers.RegexField(regex=r'^\+?1?\d{9,15}$',
-#                                           error_messages={'invalid phone': 'Неверный формат номера !'})
-#
-#     class Meta:
-#         model = User
-#         fields = ('username', 'email', 'phone_number', 'first_name',
-#                   'last_name', 'password')
-#
-#     def validate(self, attrs):
-#
-#         if User.objects.filter(phone_number=attrs['phone_number']).exists():
-#             raise serializers.ValidationError({'message': 'Данный номер телефона уже был привязан'})
-#         return super().validate(attrs)
 
 
 class RatingSerializer(serializers.ModelSerializer):
@@ -197,3 +180,14 @@ class UserChangePasswordSerializer(serializers.ModelSerializer):
         instance.set_password(validated_data['new_password'])
         instance.save()
         return instance
+
+
+class UserPaymentsHistorySerializer(serializers.ModelSerializer):
+    payments = PaymentOrderSerializer(many=True, read_only=True)
+    tether_payments = PaymentOrderTetherSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = User
+        fields = ('payments', 'tether_payments')
+
+

@@ -20,7 +20,8 @@ class PaymentOrderTetherSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PaymentOrderTether
-        fields = ('id', 'user', 'tx_id', 'created')
+        fields = ('id', 'user', 'tx_id', 'created', 'amount')
+        read_only_fields = ['created', 'amount', 'id', 'user']
 
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user

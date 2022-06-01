@@ -10,6 +10,7 @@ router.register('totp', TOTPViewSet)
 router.register('', VerificationView)
 router.register('', InvestorDashboardView)
 router.register('', UserProfileViewSet)
+router.register('history', PaymentsHistoryViewSet, basename='history')
 
 urlpatterns = [
     # path('totp/create/', TOTPCreateView.as_view(), name='totp-create'),

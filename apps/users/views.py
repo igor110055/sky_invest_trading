@@ -1,6 +1,8 @@
 from django.shortcuts import reverse
 from django.http import HttpResponseRedirect
-
+from django.db.models import Prefetch
+from django.utils.timezone import make_aware, datetime
+from datetime import date
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework import status
@@ -10,12 +12,17 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from djoser.views import TokenCreateView
 
 from apps.copytrade.serializers import MembershipSerializer
+from apps.copytrade.models import Membership
+from apps.payments.models import PaymentOrder, PaymentOrderTether, Withdraw
+from apps.payments.serializers import WithdrawSerializer
+
 
 from .models import User, Document, Trader, Banner, QA
 from .serializers import TraderSerializer, DocumentSerializer,\
     TraderDashboardSerializer, BannerSerializer, OTPTokenCreateSerializer,\
     TOTPVerifyTokenSerializer, TOTPUpdateSerializer, UserSerializer, \
-    FAQSerializer, UserProfileSerializer, UserChangePasswordSerializer
+    FAQSerializer, UserProfileSerializer, UserChangePasswordSerializer,\
+    UserPaymentsHistorySerializer
 from .utils import get_user_totp_device
 
 
@@ -189,3 +196,62 @@ class UserProfileViewSet(GenericViewSet):
     def perform_update(serializer):
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
+
+class PaymentsHistoryViewSet(GenericViewSet):
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        start_date = self.request.query_params.get('start_date')
+        end_date = self.request.query_params.get('end_date')
+        if self.action == "payments":
+            queryset = User.objects.filter(id=self.request.user.id)
+            if start_date and end_date:
+                return queryset.prefetch_related(
+                    Prefetch('payments', queryset=PaymentOrder.objects.filter(created__date__range=(start_date, end_date))),
+                    Prefetch('tether_payments', queryset=PaymentOrderTether.objects.filter(created__date__range=(start_date, end_date)))
+                )
+            return queryset.prefetch_related('payments', 'tether_payments')
+        if self.action == 'withdraws':
+            queryset = Withdraw.objects.filter(user=self.request.user)
+            if start_date and end_date:
+                return queryset.filter(created__date__range=(start_date, end_date))
+            return queryset
+
+        if self.action == 'join_to_groups':
+            queryset = Membership.objects.filter(investor=self.request.user).prefetch_related('group')
+            if start_date and end_date:
+                return queryset.filter(date_joined__date__range=(start_date, end_date))
+            return queryset
+
+    def get_serializer_class(self):
+        if self.action == 'payments':
+            return UserPaymentsHistorySerializer
+        if self.action == 'withdraws':
+            return WithdrawSerializer
+        if self.action == 'join_to_groups':
+            return MembershipSerializer
+
+    @action(methods=['get'], detail=False)
+    def payments(self, request):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset.first())
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], detail=False)
+    def withdraws(self, request):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], detail=False)
+    def join_to_groups(self, request):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # @action(methods=['get'], detail=False)
+    # def income_from_groups(self, request):
+    #     queryset = self.get_queryset()
+    #     serializer = self.get_serializer(queryset, many=True)
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
