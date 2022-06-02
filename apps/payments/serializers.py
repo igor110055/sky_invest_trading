@@ -42,5 +42,5 @@ class WithdrawSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         user_balance = self.context['request'].user.balance
         if user_balance.balance < attrs.get('amount'):
-            raise serializers.ValidationError({'message': 'Недостаточно средств на балансе'})
+            raise serializers.ValidationError({'message': 'not_enough_balance'})
         return super().validate(attrs)

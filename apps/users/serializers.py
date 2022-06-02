@@ -124,12 +124,12 @@ class OTPTokenCreateSerializer(TokenCreateSerializer):
                         code = attrs['two_fa_otp']
                         if not code:
                             raise serializers.ValidationError({
-                                "message": "Введите проверочный код Google authenticator"
+                                "message": "2fa_error"
                             })
                     except KeyError as e:
-                        raise serializers.ValidationError({"message": "Введите проверочный код Google authenticator"})
+                        raise serializers.ValidationError({"message": "2fa_error"})
                     if not device.verify_token(attrs['two_fa_otp']):
-                        raise serializers.ValidationError({"message": "Ошибка кода подтверждения Google"})
+                        raise serializers.ValidationError({"message": "2fa_invalid"})
             return super().validate(attrs)
         self.fail("invalid_credentials")
 
@@ -175,9 +175,9 @@ class UserChangePasswordSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         user = self.context['request'].user
         if not user.check_password(attrs['old_password']):
-            raise serializers.ValidationError({'message': 'Введен неверный пароль'})
+            raise serializers.ValidationError({'message': 'password_error'})
         if attrs['new_password'] != attrs['new_password2']:
-            raise serializers.ValidationError({'message': 'Пароли не совпадают'})
+            raise serializers.ValidationError({'message': 'password_invalid'})
         return super().validate(attrs)
 
     def update(self, instance, validated_data):

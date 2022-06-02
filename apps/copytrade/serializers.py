@@ -44,13 +44,13 @@ class MembershipSerializer(serializers.ModelSerializer):
                 investor=user.id,
                 group=attrs['group'].id
         ).exists():
-            raise serializers.ValidationError({'message': 'user already joined to this group'})
+            raise serializers.ValidationError({'message': 'user_already_joined_to_this_group'})
 
         if attrs['invested_sum'] < group.min_entry_sum:
-            raise serializers.ValidationError({'message': 'min entry sum error'})
+            raise serializers.ValidationError({'message': 'min_entry_sum_error'})
 
         elif attrs['invested_sum'] > group.max_entry_sum:
-            raise serializers.ValidationError({'message': 'max entry sum error'})
+            raise serializers.ValidationError({'message': 'max_entry_sum_error'})
 
         return super().validate(attrs)
 
