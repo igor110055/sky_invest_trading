@@ -36,8 +36,8 @@ def yomoney_payment_handler(request) -> None:
             if amount >= payment_order.amount:
                 user_pocket = payment_order.user.balance
 
-                payment_order.paid = True
-                payment_order.save(update_fields=['paid'])
+                payment_order.status = 'success'
+                payment_order.save(update_fields=['status'])
 
                 user_pocket.balance += Decimal(data['amount'])
                 user_pocket.save(update_fields=['balance'])
@@ -45,8 +45,8 @@ def yomoney_payment_handler(request) -> None:
         if convert_to_usd(float(data['withdraw_amount'])) >= payment_order.amount:
             user_pocket = payment_order.user.balance
 
-            payment_order.paid = True
-            payment_order.save(update_fields=['paid'])
+            payment_order.status = 'success'
+            payment_order.save(update_fields=['status'])
 
             user_pocket.balance += Decimal(data['amount'])
             user_pocket.save(update_fields=['balance'])

@@ -4,11 +4,11 @@ from .models import PaymentOrder, PaymentOrderTether, Withdraw
 
 
 class PaymentOrderSerializer(serializers.ModelSerializer):
-    paid = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = PaymentOrder
-        fields = ('amount', 'paid', 'created')
+        fields = ('amount', 'status', 'created')
+        read_only_fields = ['status', 'created']
 
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
@@ -20,8 +20,8 @@ class PaymentOrderTetherSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PaymentOrderTether
-        fields = ('id', 'user', 'tx_id', 'created', 'amount')
-        read_only_fields = ['created', 'amount', 'id', 'user']
+        fields = ('id', 'user', 'tx_id', 'created', 'amount', 'status')
+        read_only_fields = ['created', 'amount', 'id', 'user', 'status']
 
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
@@ -32,7 +32,8 @@ class WithdrawSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Withdraw
-        fields = ('address', 'amount', 'created')
+        fields = ('address', 'amount', 'created', 'status')
+        read_only_fields = ['created', 'status']
 
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user

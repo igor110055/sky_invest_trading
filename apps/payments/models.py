@@ -5,12 +5,20 @@ from apps.users.models import User
 from uuid import uuid4
 
 
+class StatusChoices(models.TextChoices):
+    SUCCESS = 'success', 'успешно'
+    EXPECTATION = 'expectation', 'ожидание'
+    NOT_SUCCESS = 'not_success', 'не успешно'
+
+
 class PaymentOrder(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True,
                              related_name='payments', verbose_name='Пользователь')
     payment_order_id = models.UUIDField(default=uuid4, verbose_name='Идентификатор платежа (Yomoney)')
     amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Сумма')
-    paid = models.BooleanField(default=False)
+    # paid = models.BooleanField(default=False)
+    status = models.CharField(choices=StatusChoices.choices,
+                              default=StatusChoices.EXPECTATION, max_length=20, verbose_name='Статус')
 
     created = models.DateTimeField(auto_now_add=True, verbose_name='Создано')
     updated = models.DateTimeField(auto_now=True, verbose_name='Обновлено')
@@ -39,7 +47,9 @@ class PaymentOrderTether(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='tether_payments', null=True)
     tx_id = models.CharField(max_length=260, blank=True, verbose_name='ID транзакции в binance')
     amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Сумма')
-    paid = models.BooleanField(default=False)
+    # paid = models.BooleanField(default=False)
+    status = models.CharField(choices=StatusChoices.choices,
+                              default=StatusChoices.EXPECTATION, max_length=20, verbose_name='Статус')
     created = models.DateTimeField(auto_now_add=True, verbose_name='Создано')
     updated = models.DateTimeField(auto_now=True, verbose_name='Обновлено')
 
@@ -54,6 +64,8 @@ class Withdraw(models.Model):
     address = models.CharField(max_length=250, verbose_name='адрес для вывода')
     amount = models.PositiveSmallIntegerField(verbose_name='Сумма')
     created = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    status = models.CharField(choices=StatusChoices.choices,
+                              default=StatusChoices.EXPECTATION, max_length=20, verbose_name='Статус')
 
     class Meta:
         verbose_name = 'Вывод'

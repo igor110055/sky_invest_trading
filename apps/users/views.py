@@ -111,6 +111,7 @@ class TOTPViewSet(GenericViewSet):
             detail=False)
     def verify(self, request):
         serializer = TOTPVerifyTokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         user = request.user
 
         device = get_user_totp_device(user)
@@ -212,22 +213,39 @@ class PaymentsHistoryViewSet(GenericViewSet):
     def get_queryset(self):
         start_date = self.request.query_params.get('start_date')
         end_date = self.request.query_params.get('end_date')
+        status = self.request.query_params.get('status')
+
         if self.action == "payments":
             queryset = User.objects.filter(id=self.request.user.id)
-            if start_date and end_date:
+            if start_date and end_date and status:
                 return queryset.prefetch_related(
-                    Prefetch('payments', queryset=PaymentOrder.objects.filter(created__date__range=(start_date, end_date))),
-                    Prefetch('tether_payments', queryset=PaymentOrderTether.objects.filter(created__date__range=(start_date, end_date)))
+                    Prefetch('payments', queryset=PaymentOrder.objects.filter(
+                        created__date__range=(start_date, end_date), status=status
+                    )),
+                    Prefetch('tether_payments', queryset=PaymentOrderTether.objects.filter(
+                        created__date__range=(start_date, end_date), status=status)
+                             )
+                )
+            elif start_date and end_date:
+                return queryset.prefetch_related(
+                    Prefetch('payments', queryset=PaymentOrder.objects.filter(
+                        created__date__range=(start_date, end_date))),
+                    Prefetch('tether_payments', queryset=PaymentOrderTether.objects.filter(
+                        created__date__range=(start_date, end_date)))
                 )
             return queryset.prefetch_related('payments', 'tether_payments')
         if self.action == 'withdraws':
             queryset = Withdraw.objects.filter(user=self.request.user)
+            if status:
+                queryset = queryset.filter(status=status)
             if start_date and end_date:
                 return queryset.filter(created__date__range=(start_date, end_date))
             return queryset
 
         if self.action == 'join_to_groups':
             queryset = Membership.objects.filter(investor=self.request.user).prefetch_related('group')
+            if status:
+                queryset = queryset.filter(status=status)
             if start_date and end_date:
                 return queryset.filter(date_joined__date__range=(start_date, end_date))
             return queryset

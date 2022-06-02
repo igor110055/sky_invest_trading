@@ -5,16 +5,17 @@ from .models import PaymentOrder, PaymentOrderTether, Withdraw
 
 @admin.register(PaymentOrder)
 class PaymentOrderAdmin(admin.ModelAdmin):
-    list_display = ['user', 'amount', 'paid', 'created']
+    list_display = ['user', 'amount', 'status', 'created']
     list_display_links = list_display
 
 
 @admin.register(PaymentOrderTether)
 class PaymentOrderTetherAdmin(admin.ModelAdmin):
-    list_display = ['user', 'amount', 'paid', 'created']
+    list_display = ['user', 'amount', 'status', 'created']
     list_display_links = list_display
 
 
 @admin.register(Withdraw)
 class WithdrawAdmin(admin.ModelAdmin):
-    list_display = ['user', 'amount', 'created']
+    list_display = ['user', 'amount', 'created', 'status']
+    list_display_links = list_display

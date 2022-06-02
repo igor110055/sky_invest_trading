@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.core.validators import MaxValueValidator
 
 from apps.users.models import Trader, User
 
@@ -34,6 +35,8 @@ class TradeGroup(models.Model):
     min_entry_sum = models.PositiveSmallIntegerField(verbose_name='Минимальная сумма входа')
     max_entry_sum = models.PositiveSmallIntegerField(verbose_name='Максимальная сумма входа')
 
+    percent_from_income = models.PositiveSmallIntegerField(verbose_name='Процент от прибыли',
+                                                           validators=[MaxValueValidator(100)])
     status = models.CharField(max_length=20, choices=Status.choices,
                               default=Status.RECRUITED, verbose_name='Статус группы')
     start_date = models.DateTimeField(verbose_name='Дата начала')

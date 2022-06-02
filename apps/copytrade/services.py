@@ -41,8 +41,8 @@ class BinanceAPI:
         try:
             for item in self.client.get_deposit_history(coin='USDT'):
                 if item['txId'] == tx_id or item['txId'].split()[2] == tx_id and item['status'] == 1:
-                    order.paid = True
-                    order.save(update_fields=['paid'])
+                    order.status = 'success'
+                    order.save(update_fields=['status'])
 
                     user_pocket = order.user.balance
                     user_pocket.balance += Decimal(item['amount'])
@@ -52,6 +52,8 @@ class BinanceAPI:
 
             return Response({'message': 'Данный txId не найден в истории'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
+            order.status = 'not_success'
+            order.save(update_fields=['status'])
             payment_logger.warning(f'{timezone.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} : payment_error : {e}')
             return Response(status=status.HTTP_409_CONFLICT)
 
@@ -64,8 +66,12 @@ class BinanceAPI:
             user_balance.balance -= obj.amount
             user_balance.save(update_fields=['balance'])
             self.client.withdraw(coin='USDT', address=obj.address, amount=obj.amount, name='Withdraw')
+            obj.status = 'success'
+            obj.save(update_fields=['status'])
             return Response(status=status.HTTP_202_ACCEPTED)
 
         except Exception as e:
+            obj.status = 'not_success'
+            obj.save(update_fields=['status'])
             withdraw_logger.warning(f'{timezone.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} : withdraw_error : {e}')
             return Response(status=status.HTTP_409_CONFLICT)

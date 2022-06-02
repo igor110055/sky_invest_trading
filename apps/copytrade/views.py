@@ -32,9 +32,8 @@ class TraderGroupViewSet(RetrieveModelMixin,
         serializer = self.get_serializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        headers = self.get_success_headers(serializer.data)
         action_trade_group.delay(serializer.instance.id)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(methods=['post', 'get'], detail=False,
             serializer_class=MembershipSerializer,
@@ -58,9 +57,3 @@ class TraderGroupViewSet(RetrieveModelMixin,
         instance = self.get_object()
         return binance_api.withdraw_from_group(instance)
 
-    @staticmethod
-    def get_success_headers(data):
-        try:
-            return {'Location': str(data[api_settings.URL_FIELD_NAME])}
-        except (TypeError, KeyError):
-            return {}
