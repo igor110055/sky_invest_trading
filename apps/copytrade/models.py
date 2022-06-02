@@ -37,6 +37,10 @@ class TradeGroup(models.Model):
 
     percent_from_income = models.PositiveSmallIntegerField(verbose_name='Процент от прибыли',
                                                            validators=[MaxValueValidator(100)])
+    trader_binance_balance = models.DecimalField(max_digits=10,
+                                                 decimal_places=2,
+                                                 verbose_name='Баланс трейдера в binance на момент вывода средств',
+                                                 null=True)
     status = models.CharField(max_length=20, choices=Status.choices,
                               default=Status.RECRUITED, verbose_name='Статус группы')
     start_date = models.DateTimeField(verbose_name='Дата начала')

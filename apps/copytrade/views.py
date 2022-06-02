@@ -1,10 +1,9 @@
 from rest_framework.viewsets import GenericViewSet
-from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, ListModelMixin, UpdateModelMixin
+from rest_framework.mixins import RetrieveModelMixin, ListModelMixin
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.settings import api_settings
 
 from .models import TradeGroup
 from .serializers import TradeGroupSerializer, MembershipSerializer, TradeGroupCreateSerializer
@@ -12,7 +11,7 @@ from .tasks import withdraw_after_join_to_group
 from .services import BinanceAPI
 
 from apps.actions.tasks import action_trade_group
-from apps.api.permissions import IsTrader, IsVerified, IsGroupOwner
+from apps.api.permissions import IsTrader, IsVerified, IsGroupOwner, WithdrawFromGroup
 from apps.telegram_bot.tasks import notify_trader
 
 
@@ -50,7 +49,7 @@ class TraderGroupViewSet(RetrieveModelMixin,
         notify_trader.delay(serializer.instance.id)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @action(methods=['post'], detail=True, permission_classes=[IsGroupOwner])
+    @action(methods=['post'], detail=True, permission_classes=[IsGroupOwner, WithdrawFromGroup])
     def withdraw(self, request, pk):
         """Вывод средств на binance"""
         binance_api = BinanceAPI()

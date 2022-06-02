@@ -20,3 +20,11 @@ class IsGroupOwner(BasePermission):
         if request.user.is_trader:
             return obj.trader == request.user.trader
         return False
+
+
+class WithdrawFromGroup(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        received_sum = 0
+        for i in obj.investors:
+            received_sum += i.invested_sum
+        return obj.need_sum == received_sum

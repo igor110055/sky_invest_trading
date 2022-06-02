@@ -223,6 +223,11 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': 'logs/withdraw'
         },
+        'withdraw_from_groups': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/withdraw_from_groups'
+        }
     },
     'loggers': {
         'register': {
@@ -240,6 +245,11 @@ LOGGING = {
             'handlers': ['withdraw'],
             'propagate': True
         },
+        'withdraw_from_groups': {
+            'level': 'WARNING',
+            'handlers': ['withdraw'],
+            'propagate': True
+        }
     }
 }
 
