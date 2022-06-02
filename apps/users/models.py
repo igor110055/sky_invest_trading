@@ -36,6 +36,11 @@ class User(AbstractUser, PermissionsMixin):
         self.otp_for_login = False
         self.save()
 
+    def otp_on(self):
+        self.otp_for_withdraw = True
+        self.otp_for_login = True
+        self.save()
+
 
 class Trader(models.Model):
     """Модель Трейдера"""

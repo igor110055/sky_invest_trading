@@ -119,6 +119,7 @@ class TOTPViewSet(GenericViewSet):
             if not device.confirmed:
                 device.confirmed = True
                 device.save()
+                user.otp_on()
             return Response(True, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
