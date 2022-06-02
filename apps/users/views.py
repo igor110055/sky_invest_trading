@@ -114,7 +114,7 @@ class TOTPViewSet(GenericViewSet):
         serializer.is_valid(raise_exception=True)
         user = request.user
 
-        device = get_user_totp_device(user)
+        device = get_user_totp_device(user, confirmed=False)
         if not device == None and device.verify_token(serializer.validated_data['token']):
             if not device.confirmed:
                 device.confirmed = True
