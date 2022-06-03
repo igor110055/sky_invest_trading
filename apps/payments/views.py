@@ -33,7 +33,7 @@ class PaymentOrderViewSet(GenericViewSet, YooMoneyMixin):
                 amount=data.amount,
                 payment_id=data.payment_order_id
             )
-        return HttpResponseRedirect(url)
+        return Response(url, status=status.HTTP_200_OK)
 
     @action(methods=['post'],
             permission_classes=[AllowAny],
