@@ -30,11 +30,11 @@ class PaymentOrderTetherSerializer(serializers.ModelSerializer):
 
 
 class WithdrawSerializer(serializers.ModelSerializer):
-    two_fa_otp_ = serializers.CharField(allow_blank=True, required=False, max_length=6)
+    two_fa_otp = serializers.CharField(allow_blank=True, required=False, max_length=6)
 
     class Meta:
         model = Withdraw
-        fields = ('address', 'amount', 'created', 'status')
+        fields = ('address', 'amount', 'created', 'status', 'two_fa_otp')
         read_only_fields = ['created', 'status']
 
     def create(self, validated_data):
