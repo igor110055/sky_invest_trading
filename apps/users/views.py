@@ -105,7 +105,7 @@ class TOTPViewSet(GenericViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.update(request.user, serializer.validated_data)
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-        return Response({"message": "2fa аутентификация не активирована"})
+        return Response({"message": "2fa_error"})
 
     @action(methods=['post'], serializer_class=TOTPVerifyTokenSerializer,
             detail=False)
@@ -115,7 +115,7 @@ class TOTPViewSet(GenericViewSet):
         user = request.user
 
         device = get_user_totp_device(user, confirmed=False)
-        if not device == None and device.verify_token(serializer.validated_data['token']):
+        if device and device.verify_token(serializer.validated_data['token']):
             if not device.confirmed:
                 device.confirmed = True
                 device.save()
