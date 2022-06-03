@@ -115,12 +115,15 @@ class TOTPViewSet(GenericViewSet):
         user = request.user
 
         device = get_user_totp_device(user, confirmed=False)
-        if device and device.verify_token(serializer.validated_data['token']):
+        if device.verify_token(serializer.validated_data['token']) == False:
+            return Response(status=status.HTTP_409_CONFLICT)
+        if device.verify_token(serializer.validated_data['token']):
             if not device.confirmed:
                 device.confirmed = True
                 device.save()
                 user.otp_on()
             return Response(True, status=status.HTTP_200_OK)
+
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['post'], detail=False, serializer_class=TOTPVerifyTokenSerializer)

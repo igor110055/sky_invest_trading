@@ -102,7 +102,7 @@ class BannerSerializer(serializers.ModelSerializer):
 
 
 class OTPTokenCreateSerializer(TokenCreateSerializer):
-    two_fa_otp = serializers.IntegerField(allow_null=True, required=False)
+    two_fa_otp = serializers.CharField(allow_null=True, required=False, max_length=6)
 
     def validate(self, attrs):
         password = attrs.get("password")
