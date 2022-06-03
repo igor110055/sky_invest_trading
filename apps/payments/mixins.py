@@ -20,7 +20,7 @@ class YooMoneyMixin:
             'quickpay-form': 'small',
             'targets': 'Пополнение баланса Sky invest',
             'paymentType': 'PC',
-            'sum': amount,
+            'sum': self.convert_to_rub(amount),
             'formcomment': 'Пополнение баланса Sky invest',
             'short-dest': 'Пополнение баланса Sky invest',
             'label': payment_id,
