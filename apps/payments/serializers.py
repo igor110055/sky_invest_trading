@@ -30,7 +30,7 @@ class PaymentOrderTetherSerializer(serializers.ModelSerializer):
 
 
 class WithdrawSerializer(serializers.ModelSerializer):
-    two_fa_otp_ = serializers.IntegerField(allow_null=True, required=False)
+    two_fa_otp_ = serializers.CharField(allow_blank=True, required=False, max_length=6)
 
     class Meta:
         model = Withdraw
