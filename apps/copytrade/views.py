@@ -7,10 +7,9 @@ from rest_framework.permissions import IsAuthenticated
 
 from .models import TradeGroup
 from .serializers import TradeGroupSerializer, MembershipSerializer, TradeGroupCreateSerializer
-from .tasks import withdraw_after_join_to_group, start_group
+from .tasks import withdraw_after_join_to_group, start_group, end_group
 from .services import BinanceAPI
 
-from apps.actions.tasks import action_trade_group
 from apps.api.permissions import IsTrader, IsVerified, IsGroupOwner, WithdrawFromGroup
 from apps.telegram_bot.tasks import notify_trader
 

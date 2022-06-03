@@ -16,8 +16,12 @@ def withdraw_after_join_to_group(membership_id: int) -> None:
 def start_group(group_id: int) -> None:
     """Start group"""
     group: TradeGroup = TradeGroup.objects.get(id=group_id)
-    group.status = TradeGroup.Status.STARTED
-    group.save(update_fields=['status'])
+    amount = 0
+    for i in group.memberships.all():
+        amount += i.invested_sum
+    if group.need_sum == amount:
+        group.status = TradeGroup.Status.STARTED
+        group.save(update_fields=['status'])
 
 
 @app.task()

@@ -68,6 +68,21 @@ services:
     depends_on:
       - server
 
+  frontend:
+    build: ./frontend/SkyInvest/
+
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      - server
+      - nginx
+    env_file:
+      - .env
+
+
+
+
 volumes:
   db:
   static_data:
