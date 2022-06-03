@@ -115,10 +115,8 @@ class TOTPViewSet(GenericViewSet):
         user = request.user
 
         device = get_user_totp_device(user, confirmed=False)
-        if device == False:
+        if not device:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        if device.verify_token(serializer.validated_data['token']) == False:
-            return Response(status=status.HTTP_409_CONFLICT)
         if device.verify_token(serializer.validated_data['token']):
             if not device.confirmed:
                 device.confirmed = True
