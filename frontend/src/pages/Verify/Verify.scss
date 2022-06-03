@@ -1,0 +1,181 @@
+.main {
+
+    &__verify_content {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        &__title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 16px;
+            box-sizing: border-box;
+
+            svg {
+                width: 50px;
+                height: 100%;
+            }
+
+            p {
+                color: #FF6B00;
+                font-size: 16px;
+            }
+        }
+
+        &__desc {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+
+            font-size: 14px;
+
+            opacity: 0.5;
+        }
+
+        &__data {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+
+            .button {
+                padding: 14px;
+                
+                color: black;
+            }
+
+            &__title {
+                font-size: 14px;
+                text-transform: uppercase;
+
+                padding: 8px;
+                box-sizing: border-box;
+
+                margin-bottom: 16px;
+
+                span {
+                    opacity: 0.5;
+                }
+
+                box-shadow: inset 0px -1px 0px rgba(49, 49, 49, 0.25);
+            }
+
+            &__title_normal {
+                padding: 16px;
+                box-sizing: border-box;
+            }
+
+            .field {
+                width: 100%;
+                
+                input {
+                    background: #FAFAFA;
+                }
+            }
+
+            &__fio, &__card_num {
+                display: flex;
+                justify-content: space-between;
+                gap: 16px;
+
+                .birthday {
+                    width: 100%;
+                    position: relative;
+
+                    .react-calendar {
+                        position: absolute;
+                        top: 100%;
+
+                        min-width: 300px;
+                        width: 100%;
+
+                        z-index: 100;
+
+                        right: 0;
+                    }
+                }
+            }
+
+            &__state {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            &__confirm_img {
+                display: flex;
+                gap: 16px;
+
+                padding: 16px;
+                box-sizing: border-box;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 700px) {
+ 
+    .main {
+
+        &__verify_content {
+    
+            &__data {
+
+                &__fio, &__card_num {
+                    flex-direction: column;
+                }
+
+                &__confirm_img {
+                    flex-direction: column;
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 500px) {
+ 
+    .main {
+
+        &__verify_content {
+
+            &__title {
+                padding: 16px;
+                box-sizing: border-box;
+
+                background: #F8F8F8;
+                border-radius: 8px;
+
+                svg {
+                    width: 100px;
+                }
+            }
+    
+            &__data {
+
+                &__title_normal {
+                    padding: 0;
+                }
+
+                &__confirm_img {
+                    flex-direction: column;
+                    padding: 0;
+
+                    .container_upload {
+                        flex-direction: column;
+
+                        &__img {
+                            width: 100%;
+                            height: 80px;
+                        }
+
+                        &__desc {
+                            width: 100%;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

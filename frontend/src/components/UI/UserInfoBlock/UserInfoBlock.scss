@@ -1,0 +1,47 @@
+.userinfoblock {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    cursor: pointer;
+
+    &__information {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: fill;
+        }
+
+        &__desc {
+            font-size: 14px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            span {
+                font-weight: 700;
+            }
+
+            p {
+                opacity: 0.5;
+            }
+        }
+    }
+
+    .order {
+
+        img {
+            order: 1;
+        }
+    }
+
+    &__logout {
+        cursor: pointer;
+    }
+}

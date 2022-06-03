@@ -1,0 +1,23 @@
+.history_header {
+
+    &__back {
+        display: none;
+
+        background-image: url("../../assets/img/arrowLeft.svg");
+        background-repeat: no-repeat;
+        background-size: cover;
+
+        width: 24px;
+        height: 21px;
+    }
+}
+
+@media screen and (max-width: 1118px) {
+    
+    .history_header {
+
+        &__back {
+            display: flex;
+        }
+    }
+}

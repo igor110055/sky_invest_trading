@@ -1,0 +1,92 @@
+.main {
+
+    &__mycopy_content {
+
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+
+        &__card {
+            width: 40%;
+            flex-grow: 1;
+            
+            &__profit {
+                width: 100%;
+                display: flex;
+            }
+
+            &__traid_cryptobtn {
+                display: flex;
+                flex-wrap: nowrap;
+                gap: 10px;
+
+                width: 50%;
+
+                .button {
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+
+                    font-size: 12px;
+                    font-weight: 400;
+
+                    img {
+                        width: 14px;
+                        height: 14px;
+                    }
+
+                    padding: 2px;
+
+                    span {
+                        opacity: 0.5;
+                    }
+                }
+            }
+
+            &__cryptobtn {
+                display: flex;
+                justify-content: space-between;
+                gap: 15px;
+
+                padding: 8px 0 8px 0;
+            }
+
+            &__pricebtn {
+                width: 100%;
+
+                font-size: 14px;
+
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+                span {
+                    width: 70%;
+
+                    b {
+                        color: #7972F3;;
+                    }
+                }
+
+                .button {
+                    width: 30%;
+                    flex-grow: 1;
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 650px) {
+
+    .main {
+
+        &__mycopy_content {
+            flex-direction: column;
+        
+            &__card {
+                width: 100%;
+            }
+        }
+    }
+}

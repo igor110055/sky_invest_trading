@@ -69,8 +69,7 @@ services:
       - server
 
   frontend:
-    build: ./frontend/SkyInvest/
-
+    build: ./frontend/
     ports:
       - "8080:8080"
 
