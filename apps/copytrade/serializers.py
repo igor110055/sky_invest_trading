@@ -4,6 +4,7 @@ from .models import TradeGroup, Membership
 
 
 class TradeGroupSerializer(serializers.ModelSerializer):
+    amount_collected = serializers.IntegerField()
 
     class Meta:
         model = TradeGroup
@@ -38,7 +39,7 @@ class MembershipSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
 
         if attrs['invested_sum'] > user.balance.balance:
-            raise serializers.ValidationError({'message': 'not enough balance'})
+            raise serializers.ValidationError({'message': 'not_enough_balance'})
 
         if Membership.objects.filter(
                 investor=user.id,

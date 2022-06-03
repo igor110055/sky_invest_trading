@@ -5,6 +5,8 @@ from django.core.validators import MaxValueValidator
 
 from apps.users.models import Trader, User
 
+from .querysets import GroupQuerySet
+
 
 class TradeGroup(models.Model):
     """Модель группы трейдера"""
@@ -46,6 +48,8 @@ class TradeGroup(models.Model):
     start_date = models.DateTimeField(verbose_name='Дата начала')
     end_date = models.DateTimeField(verbose_name='Дата окончания')
 
+    objects = GroupQuerySet.as_manager()
+
     class Meta:
         verbose_name = 'Группа трейдера'
         verbose_name_plural = 'Группы трейдеров'
@@ -57,7 +61,7 @@ class TradeGroup(models.Model):
 class Membership(models.Model):
     """Модель членства инвесторов в TradeGroup"""
     investor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='memberships')
-    group = models.ForeignKey(TradeGroup, on_delete=models.SET_NULL, null=True)
+    group = models.ForeignKey(TradeGroup, on_delete=models.SET_NULL, null=True, related_name='memberships')
     date_joined = models.DateTimeField(auto_now_add=True)
     invested_sum = models.PositiveSmallIntegerField(verbose_name="Инвестированная сумма")
 

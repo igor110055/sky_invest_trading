@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from .models import TradeGroup
 from .serializers import TradeGroupSerializer, MembershipSerializer, TradeGroupCreateSerializer
-from .tasks import withdraw_after_join_to_group
+from .tasks import withdraw_after_join_to_group, start_group
 from .services import BinanceAPI
 
 from apps.actions.tasks import action_trade_group
@@ -18,7 +18,7 @@ from apps.telegram_bot.tasks import notify_trader
 class TraderGroupViewSet(RetrieveModelMixin,
                          ListModelMixin,
                          GenericViewSet):
-    queryset = TradeGroup.objects.filter(status=TradeGroup.Status.RECRUITED)
+    queryset = TradeGroup.objects.with_amount_collected().filter(status=TradeGroup.Status.RECRUITED)
     serializer_class = TradeGroupSerializer
     permission_classes = [IsTrader, IsVerified]
 
@@ -31,7 +31,8 @@ class TraderGroupViewSet(RetrieveModelMixin,
         serializer = self.get_serializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        action_trade_group.delay(serializer.instance.id)
+        start_group.apply_async((serializer.instance.id,), eta=serializer.instance.start_date)
+        # action_trade_group.delay(serializer.instance.id)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(methods=['post', 'get'], detail=False,
