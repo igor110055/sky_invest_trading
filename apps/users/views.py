@@ -131,6 +131,7 @@ class TOTPViewSet(GenericViewSet):
     @action(methods=['post'], detail=False, serializer_class=TOTPVerifyTokenSerializer)
     def delete(self, request):
         serializer = TOTPVerifyTokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         user = request.user
         device = get_user_totp_device(user)
 
