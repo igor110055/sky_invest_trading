@@ -33,7 +33,7 @@ class PaymentOrder(models.Model):
 
 class Currency(models.Model):
     name = models.CharField(max_length=5, verbose_name='Имя валюты')
-    value = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Курс по отношению к сому')
+    value = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Курс по отношению к рублю')
 
     class Meta:
         verbose_name = "Валюта"

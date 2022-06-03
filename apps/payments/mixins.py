@@ -9,9 +9,9 @@ class YooMoneyMixin:
     url = 'https://yoomoney.ru/quickpay/confirm.xml'
 
     @staticmethod
-    def convert_to_usd(amount: int):
+    def convert_to_rub(amount: int):
         usd = Currency.objects.get(name='usd')
-        heft = amount / usd.value
+        heft = amount * usd.value
         return round(heft * 1, 2)
 
     def get_payment_url_for_yomoney(self, amount: int, payment_id: str) -> str:
