@@ -1,8 +1,8 @@
 FROM node:16-alpine AS deps
 
-WORKDIR /app
+WORKDIR .
 
-COPY ./ ./
+COPY package*.json ./
 
 RUN yarn
 

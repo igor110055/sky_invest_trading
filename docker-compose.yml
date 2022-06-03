@@ -78,4 +78,5 @@ services:
 
 volumes:
   db:
+  frontend:
   static_data:
