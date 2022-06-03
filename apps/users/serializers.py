@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from django.contrib.auth import authenticate
+from django.conf import settings
 
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
@@ -130,8 +131,19 @@ class OTPTokenCreateSerializer(TokenCreateSerializer):
                         raise serializers.ValidationError({"message": "2fa_error"})
                     if not device.verify_token(attrs['two_fa_otp']):
                         raise serializers.ValidationError({"message": "2fa_invalid"})
-            return super().validate(attrs)
-        self.fail("invalid_credentials")
+
+        password = attrs.get("password")
+        params = {settings.LOGIN_FIELD: attrs.get(settings.LOGIN_FIELD)}
+        self.user = authenticate(
+            request=self.context.get("request"), **params, password=password
+        )
+        if not self.user:
+            self.user = User.objects.filter(**params).first()
+            if self.user and not self.user.check_password(password):
+                raise serializers.ValidationError({'message': 'password_error'})
+        if self.user and self.user.is_active:
+            return attrs
+        raise serializers.ValidationError({'message': 'login_error'})
 
 
 class FAQSerializer(serializers.ModelSerializer):
