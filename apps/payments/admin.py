@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import PaymentOrder, PaymentOrderTether, Withdraw
+from .models import PaymentOrder, PaymentOrderTether, Withdraw, Currency
 
 
 @admin.register(PaymentOrder)
@@ -18,4 +18,10 @@ class PaymentOrderTetherAdmin(admin.ModelAdmin):
 @admin.register(Withdraw)
 class WithdrawAdmin(admin.ModelAdmin):
     list_display = ['user', 'amount', 'created', 'status']
+    list_display_links = list_display
+
+
+@admin.register(Currency)
+class CurrencyAdmin(admin.ModelAdmin):
+    list_display = ['name', 'value']
     list_display_links = list_display
