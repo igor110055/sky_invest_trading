@@ -1,11 +1,11 @@
 from rest_framework import serializers
 
 from django.contrib.auth import authenticate
-from django.conf import settings
 
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
 from djoser.serializers import TokenCreateSerializer
+from djoser.conf import settings
 from django_otp.plugins.otp_totp.models import TOTPDevice
 
 from .models import User, Trader, Document, DocumentImage, Rating, Banner, QA
