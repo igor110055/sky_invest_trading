@@ -143,7 +143,7 @@ class OTPTokenCreateSerializer(TokenCreateSerializer):
                 raise serializers.ValidationError({'message': 'password_error'})
         if self.user and self.user.is_active:
             return attrs
-        raise serializers.ValidationError({'message': 'login_error'})
+        raise serializers.ValidationError({'message': 'inactive_user'})
 
 
 class FAQSerializer(serializers.ModelSerializer):

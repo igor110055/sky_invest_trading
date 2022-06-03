@@ -51,7 +51,7 @@ class TraderViewSet(GenericViewSet):
         serializer.save()
         request.user.is_trader = True
         request.user.save()
-        return HttpResponseRedirect(reverse('users-verification'))
+        return Response(status=status.HTTP_201_CREATED)
 
     @action(methods=['post'], detail=True, serializer_class=RatingSerializer)
     def rate(self, request):
