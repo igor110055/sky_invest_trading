@@ -61,7 +61,7 @@ services:
   frontend:
     build: ./frontend/
     volumes:
-      - frontend:/app/dist
+      - frontend:/app/
     env_file:
       - .env
 
