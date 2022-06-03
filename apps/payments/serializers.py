@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from .models import PaymentOrder, PaymentOrderTether, Withdraw
 
+from apps.users.utils import get_user_totp_device
 
 class PaymentOrderSerializer(serializers.ModelSerializer):
 
@@ -29,6 +30,7 @@ class PaymentOrderTetherSerializer(serializers.ModelSerializer):
 
 
 class WithdrawSerializer(serializers.ModelSerializer):
+    two_fa_otp_ = serializers.IntegerField(allow_null=True, required=False)
 
     class Meta:
         model = Withdraw
@@ -40,7 +42,23 @@ class WithdrawSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
     def validate(self, attrs):
-        user_balance = self.context['request'].user.balance
+        user = self.context['request'].user
+        if user.otp_for_withdraw:
+            device = get_user_totp_device(user)
+
+            if device and device.confirmed:
+                try:
+                    code = attrs['two_fa_otp']
+                    if not code:
+                        raise serializers.ValidationError({
+                            "message": "2fa_error"
+                        })
+                except KeyError as e:
+                    raise serializers.ValidationError({"message": "2fa_error"})
+                if not device.verify_token(attrs['two_fa_otp']):
+                    raise serializers.ValidationError({"message": "2fa_invalid"})
+
+        user_balance = user.balance
         if user_balance.balance < attrs.get('amount'):
             raise serializers.ValidationError({'message': 'not_enough_balance'})
         return super().validate(attrs)
