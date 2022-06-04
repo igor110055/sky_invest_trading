@@ -16,7 +16,7 @@ import "../Forms.scss";
 import "./VisaPaymentForm.scss";
 import Select from "../../Select";
 
-const VisaPaymentForm = () => {
+const VisaPaymentForm = ({ fetchData }) => {
     const navigate = useNavigate();
     const [valute, setValute] = useState("USD");
     const [loaded, setLoaded] = useState(true);
@@ -42,7 +42,7 @@ const VisaPaymentForm = () => {
     const onSubmitHandler = async (data) => {
         setLoaded(false);
 
-        console.log(data);
+        fetchData(data);
 
         setLoaded(true);
     };

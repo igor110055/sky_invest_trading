@@ -36,9 +36,8 @@ const Login = () => {
     };
 
     useEffect(() => {
-        console.log(messages);
         if (messages === "error_login") {
-            setError("error_login");
+            setError("Логин или пароль не верны");
         } else {
             setError("");
         }
@@ -48,7 +47,11 @@ const Login = () => {
         }
 
         if (messages === "Unable to log in with provided credentials.") {
-            setError("error_login");
+            setError("Логин или пароль не верны");
+        }
+
+        if (messages === "inactive_user") {
+            setError("Такого пользователя не существует");
         }
     }, [messages]);
 

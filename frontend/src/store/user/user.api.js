@@ -6,6 +6,7 @@ let initialState = {
     groups: null,
     isAuth: false,
     isTraider: false,
+    payment: null,
 };
 
 const userReducer = (state = initialState, action) => {
@@ -19,6 +20,11 @@ const userReducer = (state = initialState, action) => {
             return {
                 ...state,
                 groups: action.payload,
+            };
+        case "SET_PAYMENT":
+            return {
+                ...state,
+                payment: action.payload,
             };
         case "RESET_USER":
             return {
@@ -50,6 +56,10 @@ export const actions = {
         type: "SET_IS_AUTH",
         payload: toggle,
     }),
+    setPay: (data) => ({
+        type: "SET_PAYMENT",
+        payload: data,
+    }),
     setDataGroup: (data) => ({
         type: "SET_GROUP",
         payload: data,
@@ -61,16 +71,16 @@ export const actions = {
     message: (message) => ({ type: "SET_MESSAGE", payload: message }),
 };
 
-export const PaymetVisa = (data) => async (dispatch) => {
+export const paymetVisa = (data) => async (dispatch) => {
     try {
-        let response = await userService.login(data);
+        const token = localStorage.getItem("token");
+        let response = await userService.paymentVisa(token, data);
         if (response.data) {
-            dispatch(actions.setIsAuth(true));
-            localStorage.setItem("token", response.data.auth_token);
+            dispatch(actions.setPay(response.data));
         }
     } catch (e) {
-        if (e.response.data.message) {
-            dispatch(actions.message(e.response.data.message[0]));
+        if (e.response) {
+            dispatch(actions.message("visa_false"));
         }
     }
 };

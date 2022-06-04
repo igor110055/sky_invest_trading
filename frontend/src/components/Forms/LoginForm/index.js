@@ -107,11 +107,7 @@ const LoginForm = ({ fetchData, error }) => {
                 {errors.password && (
                     <span className="form__error">{showPasswordError()}</span>
                 )}
-                {error === "Unable to log in with provided credentials." ? (
-                    <span className="form__error">
-                        Пароль или емейл введены неправильно!
-                    </span>
-                ) : null}
+                {error ? <span className="form__error">{error}</span> : null}
                 <div className="form__confirm">
                     <Checkbox
                         onClick={handleCheckbox}

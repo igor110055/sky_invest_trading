@@ -12,6 +12,8 @@ import usdtIcon from "@assets/img/balance.svg";
 
 //Styles
 import "./Payments.scss";
+import { useDispatch, useSelector } from "react-redux";
+import { paymentVisa } from "../../store/payment/pay.api";
 
 const pay_method = [
     {
@@ -31,13 +33,33 @@ const pay_method = [
 ];
 
 const Payments = () => {
+    const dispatch = useDispatch();
     const [tab, setTab] = useState(1);
     const [renderBlock, setRenderBlock] = useState(<VisaPaymentForm />);
+    const { messages } = useSelector((state) => state.user);
+    const { visa_key } = useSelector((state) => state.pay);
+    const [err, setErr] = useState(false);
+
+    const visapay = (data) => {
+        dispatch(paymentVisa({ amount: parseInt(data.cash) }));
+    };
+
+    useEffect(() => {
+        if (visa_key) {
+            window.location.href = visa_key;
+        }
+    }, [visa_key]);
+
+    useEffect(() => {
+        if (messages === "visa_false") {
+            setErr(true);
+        }
+    }, [messages]);
 
     const tabShow = () => {
         switch (tab) {
             case 1:
-                setRenderBlock(<VisaPaymentForm />);
+                setRenderBlock(<VisaPaymentForm fetchData={visapay} />);
                 break;
             case 2:
                 setRenderBlock(<USDTForm />);

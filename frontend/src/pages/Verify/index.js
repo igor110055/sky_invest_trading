@@ -106,7 +106,7 @@ const Verify = () => {
         });
 
         if (validate === 9) {
-            console.log(errors);
+            const obj = {};
         }
 
         // dispatch(verification(obj));

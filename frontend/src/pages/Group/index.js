@@ -23,7 +23,7 @@ const Group = ({ title, desc, ...props }) => {
     const params = useParams();
 
     useEffect(() => {
-        getGroup(params.id);
+        dispatch(getGroup(params.id));
     }, []);
 
     return group ? (
@@ -44,7 +44,7 @@ const Group = ({ title, desc, ...props }) => {
                         />
                     </svg>
 
-                    <span>Название группы</span>
+                    <span>{group.title}</span>
                 </div>
             </div>
             <div className="main__group_content">
@@ -55,17 +55,19 @@ const Group = ({ title, desc, ...props }) => {
                     logo="https://cdn.dribbble.com/users/24078/screenshots/15522433/media/e92e58ec9d338a234945ae3d3ffd5be3.jpg?compress=1&resize=400x300"
                 >
                     <div className="main__group_content__card__title">
-                        <span>Название группы</span>
+                        <span>{group.title}</span>
                     </div>
                     <div className="main__group_content__card__desc">
-                        <p>
-                            Внеси свой первый депозит на Bitget и получи +5%
-                            кешбэка на счет USDT-M. Макс.выплата торгового
-                            бонуса составляет до 100$.
-                        </p>
+                        <p>{group.description}</p>
                     </div>
                     <div className="main__group_content__card__linebar">
-                        <ProgressBar completed={20} from={5000} to={10000} />
+                        <ProgressBar
+                            completed={group.need_sum / 500 - 1}
+                            from={500}
+                            to={group.need_sum}
+                            start={group.start_date}
+                            end={group.end_date}
+                        />
                     </div>
                 </CardInfo>
                 <div className="main__group_content__card__payment">

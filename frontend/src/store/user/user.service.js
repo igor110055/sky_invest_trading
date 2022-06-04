@@ -30,8 +30,12 @@ const register = async (userData) => {
     return res;
 };
 
-const payment = async (userData) => {
-    const res = await instance.post(`payment/register/`, userData);
+const paymentVisa = async (token, userData) => {
+    const res = await instance.post(`/payment/`, userData, {
+        headers: {
+            Authorization: `Token ${token}`,
+        },
+    });
 
     return res;
 };
@@ -127,6 +131,7 @@ const userService = {
     createGroup,
     logout,
     register,
+    paymentVisa,
     trader_apply,
     login,
     reset_password,
