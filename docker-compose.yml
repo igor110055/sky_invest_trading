@@ -57,13 +57,13 @@ services:
     restart: always
     env_file:
       - .env
-
-  frontend:
-    build: ./frontend/
-    volumes:
-      - frontend_data:/app/build
-    env_file:
-      - .env
+#
+#  frontend:
+#    build: ./frontend/
+#    volumes:
+#      - frontend_data:/app/build
+#    env_file:
+#      - .env
 
   nginx:
     image: nginx:alpine
