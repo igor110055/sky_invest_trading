@@ -1,0 +1,119 @@
+.historylayout {
+    width: 100%;
+
+    display: flex;
+    gap: 16px;
+
+    .history_sidebar {
+        width: 25%;
+        font-size: 12px;
+    }
+
+    &__content {
+        width: 60%;
+        flex-grow: 1;
+
+        .history_page {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            
+            &__title {
+                padding: 0 0 24px 0;
+                
+                font-weight: bold;
+                font-size: 14px;
+
+                box-shadow: inset 0px -1px 0px #CCD4D8;
+                box-sizing: border-box;
+            }
+
+            &__filter {
+                display: flex;
+                gap: 10px;
+
+                font-size: 14px;
+
+                label {
+                    font-size: 10px;
+                }
+
+                .field {
+                    ::placeholder {
+                        color: black;
+                        opacity: 1;
+                    }
+
+                    input {
+                        background: #F8F8F8;
+                    }
+                }
+
+                &__date {
+                    width: 25%;
+                    position: relative;
+
+                    .react-calendar {
+                        min-width: 312px;
+                        position: absolute;
+                        z-index: 50;
+
+                        left: 0;
+                        top: 100%;
+                    }
+                }
+
+                &__select {
+                    display: flex;
+                    flex-direction: column;
+                    flex-grow: 1;
+                    justify-content: flex-start;
+
+                    gap: 8px;
+
+                    .select {
+                        height: 100%;
+                    }
+                }
+            }
+
+            &__messages_info {
+
+                &__title {
+                    padding-bottom: 16px;
+                    text-transform: uppercase;
+                    
+                    font-weight: 400;
+                }
+
+                &__content {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 16px;
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 700px) {
+    
+    .historylayout {
+        flex-direction: column;
+
+        .history_sidebar {
+            width: 100%;
+        }
+
+        &__content {
+            width: 100%;
+
+            .history_page {
+                
+                &__title {
+                    display: none;
+                }
+            }
+        }
+    }
+}

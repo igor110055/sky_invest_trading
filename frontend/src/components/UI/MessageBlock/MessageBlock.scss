@@ -1,0 +1,66 @@
+.messageblock {
+
+    padding: 16px;
+
+    box-sizing: border-box;
+    background: #FAFAFA;
+    border-radius: 8px;
+
+    font-size: 14px;
+
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+
+        &__title {
+            font-weight: bold;
+        }
+
+        &__success {
+
+            .success {
+                color: #4EC060;
+            }
+
+            .fail {
+                color: #C04E4E;
+            }
+
+            .load {
+                color: #537BEE;
+            }
+        }
+    }
+
+    &__card {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+
+        span {
+            word-break: break-all;
+        }
+    }
+
+    &__footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+
+        &__date {
+            display: flex;
+            gap: 8px;
+        }
+
+        &__sum {
+            display: flex;
+            gap: 8px;
+        }
+    }
+}

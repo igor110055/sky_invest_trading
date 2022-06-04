@@ -1,0 +1,59 @@
+.form {
+    width: 100%;
+
+    &__cash_fields {
+        width: 100%;
+
+        display: flex;
+        gap: 16px;
+
+        &__valute {
+            display: flex;
+            align-items: flex-start;
+            
+            .field {
+                width: 75%;
+                height: 100%;
+            }
+    
+            &__select {
+                width: 25%;
+                height: 50px;
+    
+                flex-grow: 1;
+                
+                margin-top: 22px;
+                background: white !important;
+                padding: 16px !important;
+    
+                font-size: 12px;
+    
+                .select__list {
+                    background: white !important;
+                }
+            }
+        }
+
+        &__card_number {
+            width: 100%;
+        }
+    }
+
+    &__button {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+
+        svg {
+            width: 13px;
+            height: 13px;
+            fill: white;
+        }
+    }
+
+    &__error {
+        font-size: 12px;
+        color: red;
+        margin-top: -15px;
+    }
+}

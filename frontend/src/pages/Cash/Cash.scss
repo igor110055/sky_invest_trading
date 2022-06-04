@@ -1,0 +1,18 @@
+@media screen and (max-width: 615px) {
+    
+    .main {
+
+        &__cash_content {
+    
+            .form {
+    
+                &__cash_fields {
+    
+                    &__valute {
+                        display: none;
+                    }
+                }
+            }
+        }
+    }
+}

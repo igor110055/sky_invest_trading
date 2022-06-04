@@ -1,0 +1,33 @@
+.history_sidebar {
+    
+    &__links {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    
+        a {
+            color: black;
+            background: #FAFAFA;
+    
+            padding: 12px;
+            border-radius: 8px;
+    
+            text-decoration: none;
+            transition: all 0.5s ease;
+            
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    
+        .active {
+            color: #FDFDFE;
+            background: radial-gradient(100.84% 5352.77% at 0.98% 0%, #9E68F8 0%, #537BEE 100%);
+            
+            svg {
+                stroke: white;
+                fill: white;
+            }
+        }
+    }
+}

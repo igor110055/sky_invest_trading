@@ -1,0 +1,21 @@
+.form {
+    padding: 24px;
+
+    box-sizing: border-box;
+    border-radius: 8px;
+    
+    border: 1px solid #F0F0F0;
+
+    background: #FBFBFB;
+    
+    &__button {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+}

@@ -1,0 +1,18 @@
+.investor {
+
+    .sidebar {
+        display: flex !important;
+        
+        padding: 0;
+        
+        box-shadow: none;
+
+        &__logo {
+            display: none;
+        }
+
+        &__balance, &__todyprofit, &__menu {
+            order: 1;
+        }
+    }
+}
