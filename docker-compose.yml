@@ -61,7 +61,7 @@ services:
   frontend:
     build: ./frontend/
     volumes:
-      - frontend:/frontend/app
+      - frontend:/app
     env_file:
       - .env
 
@@ -78,5 +78,4 @@ services:
 
 volumes:
   db:
-  frontend:
   static_data:
