@@ -15,7 +15,8 @@ services:
   server:
     build: .
     command: bash -c "
-      python manage.py migrate 
+      python manage.py migrate &&
+      python manage.py collectstatic &&
       && gunicorn sky_invest_trading.wsgi:application --bind 0.0.0.0:8000
       "
     restart: always
@@ -75,6 +76,7 @@ services:
       - "80:80"
     depends_on:
       - server
+      - frontend
 
 volumes:
   db:
