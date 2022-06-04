@@ -61,7 +61,7 @@ services:
   frontend:
     build: ./frontend/
     volumes:
-      - frontend_data:/app/public
+      - frontend_data:/build
     env_file:
       - .env
 
@@ -75,7 +75,6 @@ services:
       - "80:80"
     depends_on:
       - server
-      - frontend
 
 volumes:
   db:
