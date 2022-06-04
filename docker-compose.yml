@@ -60,8 +60,8 @@ services:
 
   frontend:
     build: ./frontend/
-    volumes:
-      - frontend:/app
+#    volumes:
+#      - frontend:/app
     env_file:
       - .env
 
