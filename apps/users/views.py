@@ -157,7 +157,7 @@ class VerificationView(GenericViewSet):
 
 class InvestorDashboardView(GenericViewSet):
     permission_classes = [IsAuthenticated]
-    queryset = User.objects.with_roi_level_and_profit().filter(is_active=True)
+    queryset = User.objects.with_roi_level_and_profit().filter(is_active=True).select_related('balance')
     serializer_class = UserSerializer
 
     @action(methods=['get'], detail=False)

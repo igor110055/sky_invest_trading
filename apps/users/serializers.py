@@ -8,20 +8,27 @@ from djoser.serializers import TokenCreateSerializer
 from djoser.conf import settings
 from django_otp.plugins.otp_totp.models import TOTPDevice
 
-from .models import User, Trader, Document, DocumentImage, Rating, Banner, QA
+from .models import User, Trader, Document, DocumentImage, Rating, Banner, QA, Balance
 from .utils import get_user_totp_device
 
 from apps.payments.serializers import PaymentOrderSerializer, PaymentOrderTetherSerializer
 
 
+class UserBalanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Balance
+        fields = ('balance',)
+
+
 class UserSerializer(serializers.ModelSerializer):
     roi_level = serializers.CharField(max_length=10, allow_blank=True)
     profit = serializers.CharField(max_length=10, allow_blank=True)
+    balance = UserBalanceSerializer()
 
     class Meta:
         model = User
         fields = ('email', 'phone_number', 'first_name', 'last_name',
-                  'last_login', 'date_joined', 'roi_level', 'profit', 'is_trader')
+                  'last_login', 'date_joined', 'roi_level', 'profit', 'is_trader', 'balance')
 
 
 class RatingSerializer(serializers.ModelSerializer):
@@ -205,5 +212,4 @@ class UserPaymentsHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('payments', 'tether_payments')
-
 
