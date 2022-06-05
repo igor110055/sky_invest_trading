@@ -13,7 +13,7 @@ class ActivationEmail(BaseEmailMessage):
         context = super().get_context_data()
 
         user = context.get("user")
-        context['domain'] = 'sky-invest.vercel.app'
+        context['domain'] = 'trusttrade.pro'
         context['protocol'] = 'https'
         context["uid"] = utils.encode_uid(user.pk)
         context["token"] = default_token_generator.make_token(user)
@@ -29,7 +29,7 @@ class PasswordResetEmail(BaseEmailMessage):
         context = super().get_context_data()
 
         user = context.get("user")
-        context['domain'] = 'sky-invest.vercel.app'
+        context['domain'] = 'trusttrade.pro'
         context['protocol'] = 'https'
         context["uid"] = utils.encode_uid(user.pk)
         context["token"] = default_token_generator.make_token(user)
