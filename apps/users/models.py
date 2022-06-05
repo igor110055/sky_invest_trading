@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import PermissionsMixin, AbstractUser
 
-from .managers import UserManager
+from .managers import UserManager, TraderQuerySet
 
 
 class User(AbstractUser, PermissionsMixin):
@@ -49,6 +49,8 @@ class Trader(models.Model):
     binance_api_key = models.CharField(max_length=100, blank=True, verbose_name='API ключ от аккаунта в binance')
     binance_secret_key = models.CharField(max_length=100, blank=True, verbose_name='SECRET ключ от аккаунта binance')
 
+    objects = TraderQuerySet.as_manager()
+
     class Meta:
         verbose_name = 'Трейдер'
         verbose_name_plural = 'Трейдеры'
@@ -82,7 +84,7 @@ class Document(models.Model):
         verbose_name_plural = 'Документы'
 
     def __str__(self):
-        return f"{self.trader}"
+        return f"{self.user}"
 
 
 class DocumentImage(models.Model):

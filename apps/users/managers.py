@@ -28,3 +28,13 @@ class UserManager(UserManager):
 
     def with_roi_level_and_profit(self):
         return self.annotate(roi_level=models.Value('0'), profit=models.Value('0'))
+
+
+class TraderQuerySet(models.QuerySet):
+    def with_statistic(self):
+        return self.annotate(roi_statistic=models.Value(0),
+                             profit=models.Value(0),
+                             people_in_groups=models.Count('groups__memberships', distinct=True),
+                             people_copying=models.Value(0),
+                             income_of_groups=models.Value(0),
+                             addmission_to_groups=models.Value(0),)

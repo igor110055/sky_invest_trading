@@ -21,8 +21,8 @@ class UserBalanceSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    roi_level = serializers.CharField(max_length=10, allow_blank=True)
-    profit = serializers.CharField(max_length=10, allow_blank=True)
+    roi_level = serializers.CharField(max_length=10, allow_blank=True, required=False)
+    profit = serializers.CharField(max_length=10, allow_blank=True, required=False)
     balance = UserBalanceSerializer()
 
     class Meta:
@@ -84,23 +84,21 @@ class TraderSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class TraderStatisticSerializer(serializers.Serializer):
-    roi_statistic = serializers.DecimalField(max_digits=6, decimal_places=2)
-    profit = serializers.DecimalField(max_digits=6, decimal_places=2)
-    people_in_groups = serializers.IntegerField()
-    people_copying = serializers.IntegerField()
-    income_of_groups = serializers.IntegerField()
-    admission_to_groups = serializers.IntegerField()
-
-
 class TraderDashboardSerializer(serializers.ModelSerializer):
     user = UserSerializer()
-    statistic = TraderStatisticSerializer()
-    document = DocumentSerializer()
+
+    roi_statistic = serializers.DecimalField(max_digits=6, decimal_places=2, allow_null=True, required=False)
+    profit = serializers.DecimalField(max_digits=6, decimal_places=2, allow_null=True, required=False)
+    people_in_groups = serializers.IntegerField(allow_null=True, required=False)
+    people_copying = serializers.IntegerField(allow_null=True, required=False)
+    income_of_groups = serializers.IntegerField(allow_null=True, required=False)
+    admission_to_groups = serializers.IntegerField(allow_null=True, required=False)
 
     class Meta:
         model = Trader
-        fields = ('user', 'statistic', 'document')
+        fields = ('user',
+                  'roi_statistic', 'profit', 'people_in_groups', 'people_copying',
+                  'income_of_groups', 'admission_to_groups')
 
 
 class BannerSerializer(serializers.ModelSerializer):

@@ -29,7 +29,7 @@ from .utils import get_user_totp_device
 class TraderViewSet(GenericViewSet):
     model = Trader
     serializer_class = TraderSerializer
-    queryset = Trader.objects.all().select_related('user__document')
+    queryset = Trader.objects.with_statistic()
     permission_classes = [IsAuthenticated]
 
     @action(methods=['get'], detail=True,
