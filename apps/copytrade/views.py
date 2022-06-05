@@ -43,6 +43,8 @@ class TraderGroupViewSet(RetrieveModelMixin,
         serializer.is_valid(raise_exception=True)
         serializer.save()
         start_group.apply_async((serializer.instance.id,), eta=serializer.instance.start_date)
+        end_group.apply_async((serializer.instance.id,), eta=serializer.instance.end_date)
+
         # action_trade_group.delay(serializer.instance.id)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -81,6 +83,6 @@ class TraderGroupViewSet(RetrieveModelMixin,
     def delete(self, request, pk):
         instance = self.get_object()
         if instance.memberships:
-            return Response({'message': 'invalid_delete'}, status=status.HTTP_403_FORBIDDEN)
+            return Response({'message': 'Нельзя удалить группу'}, status=status.HTTP_403_FORBIDDEN)
         instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

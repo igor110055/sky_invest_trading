@@ -71,3 +71,7 @@ class Membership(models.Model):
 
     def __str__(self):
         return f'{self.group} : {self.investor}'
+
+
+class CopyTrade(models.Model):
+    pass

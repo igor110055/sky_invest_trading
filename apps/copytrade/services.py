@@ -22,6 +22,7 @@ class BinanceAPI:
         self.client = Client(settings.BINANCE_API, settings.BINANCE_SECRET)
 
     def withdraw_from_group(self, group: TradeGroup) -> Response:
+        """Вывод средств с группы"""
         trader = group.trader
         trader_deposit_address = Client(trader.binance_api_key, trader.binance_secret_key)\
             .get_deposit_address(coin='USDT')['address']
@@ -38,9 +39,10 @@ class BinanceAPI:
             return Response(status=status.HTTP_409_CONFLICT)
 
     def check_tx_id(self, order: PaymentOrderTether) -> Response:
+        """Проверка txid"""
         tx_id = order.tx_id
         if PaymentOrderTether.objects.filter(tx_id=tx_id).exists():
-            return Response({'message': 'Этот Tx ID уже использовался'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+            return Response({'message': 'tx_id_error'}, status=status.HTTP_406_NOT_ACCEPTABLE)
         try:
             for item in self.client.get_deposit_history(coin='USDT'):
                 if item['txId'] == tx_id or item['txId'].split()[2] == tx_id and item['status'] == 1:
@@ -50,8 +52,8 @@ class BinanceAPI:
                     user_pocket = order.user.balance
                     user_pocket.balance += Decimal(item['amount'])
                     user_pocket.save(update_fields=['balance'])
-                    return Response({'message': 'Баланс успешно пополнен'}, status=status.HTTP_202_ACCEPTED)
-            return Response({'message': 'Данный txId не найден в истории'}, status=status.HTTP_404_NOT_FOUND)
+                    return Response({'message': 'Успешно'}, status=status.HTTP_202_ACCEPTED)
+            return Response({'message': 'Данный tx id не найден'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             order.status = 'not_success'
             order.save(update_fields=['status'])
@@ -62,6 +64,7 @@ class BinanceAPI:
         return self.client.get_deposit_address(coin='USDT')['address']
 
     def withdraw(self, obj: Withdraw) -> Response:
+        """Вывод средств"""
         try:
             user_balance = obj.user.balance
             user_balance.balance -= obj.amount
@@ -78,3 +81,10 @@ class BinanceAPI:
             obj.save(update_fields=['status'])
             withdraw_logger.warning(f'{timezone.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} : withdraw_error : {e}')
             return Response(status=status.HTTP_409_CONFLICT)
+
+    def end_group(self, group: TradeGroup):
+        trader = group.trader
+        trader_client = Client(trader.binance_api_key, trader.binance_secret_key)
+
+
+

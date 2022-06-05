@@ -4,7 +4,10 @@ from .models import TradeGroup, Membership
 
 
 class TradeGroupSerializer(serializers.ModelSerializer):
-    amount_collected = serializers.IntegerField()
+    amount_collected = serializers.IntegerField(allow_null=True, required=False)
+    first_name = serializers.CharField(allow_blank=True, required=False)
+    last_name = serializers.CharField(allow_blank=True, required=False)
+    email = serializers.EmailField(allow_blank=True, required=False)
 
     class Meta:
         model = TradeGroup
@@ -39,19 +42,19 @@ class MembershipSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
 
         if attrs['invested_sum'] > user.balance.balance:
-            raise serializers.ValidationError({'message': 'not_enough_balance'})
+            raise serializers.ValidationError({'message': 'Нехватает баланса'})
 
         if Membership.objects.filter(
                 investor=user.id,
                 group=attrs['group'].id
         ).exists():
-            raise serializers.ValidationError({'message': 'user_already_joined_to_this_group'})
+            raise serializers.ValidationError({'message': 'Вы уже присоединились к этой группе'})
 
         if attrs['invested_sum'] < group.min_entry_sum:
-            raise serializers.ValidationError({'message': 'min_entry_sum_error'})
+            raise serializers.ValidationError({'message': 'Ошибка минимальной суммы входа'})
 
         elif attrs['invested_sum'] > group.max_entry_sum:
-            raise serializers.ValidationError({'message': 'max_entry_sum_error'})
+            raise serializers.ValidationError({'message': 'Ошибка максимальной суммы входа'})
 
         return super().validate(attrs)
 
