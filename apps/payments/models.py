@@ -46,7 +46,7 @@ class Currency(models.Model):
 class PaymentOrderTether(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='tether_payments', null=True)
     tx_id = models.CharField(max_length=260, blank=True, verbose_name='ID транзакции в binance')
-    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Сумма')
+    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Сумма', null=True)
     # paid = models.BooleanField(default=False)
     status = models.CharField(choices=StatusChoices.choices,
                               default=StatusChoices.EXPECTATION, max_length=20, verbose_name='Статус')
