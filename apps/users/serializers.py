@@ -129,15 +129,10 @@ class OTPTokenCreateSerializer(TokenCreateSerializer):
 
                 if device and device.confirmed:
                     try:
-                        code = attrs['two_fa_otp']
-                        if not code:
-                            raise serializers.ValidationError({
-                                "message": "2fa_error"
-                            })
+                        if not device.verify_token(attrs['two_fa_otp']):
+                            raise serializers.ValidationError({"message": "Ошибка кода Google authenticator"})
                     except KeyError as e:
-                        raise serializers.ValidationError({"message": "2fa_error"})
-                    if not device.verify_token(attrs['two_fa_otp']):
-                        raise serializers.ValidationError({"message": "2fa_invalid"})
+                        raise serializers.ValidationError({"message": "Введите код Google authenticator"})
 
         password = attrs.get("password")
         params = {settings.LOGIN_FIELD: attrs.get(settings.LOGIN_FIELD)}
@@ -147,10 +142,10 @@ class OTPTokenCreateSerializer(TokenCreateSerializer):
         if not self.user:
             self.user = User.objects.filter(**params).first()
             if self.user and not self.user.check_password(password):
-                raise serializers.ValidationError({'message': 'password_error'})
+                raise serializers.ValidationError({'message': 'Неверный логин или пароль'})
         if self.user and self.user.is_active:
             return attrs
-        raise serializers.ValidationError({'message': 'inactive_user'})
+        raise serializers.ValidationError({'message': 'Неактивный пользователь'})
 
 
 class FAQSerializer(serializers.ModelSerializer):
@@ -194,9 +189,9 @@ class UserChangePasswordSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         user = self.context['request'].user
         if not user.check_password(attrs['old_password']):
-            raise serializers.ValidationError({'message': 'password_error'})
+            raise serializers.ValidationError({'message': 'Неверный пароль'})
         if attrs['new_password'] != attrs['new_password2']:
-            raise serializers.ValidationError({'message': 'password_invalid'})
+            raise serializers.ValidationError({'message': 'Пароли не совпадают'})
         return super().validate(attrs)
 
     def update(self, instance, validated_data):

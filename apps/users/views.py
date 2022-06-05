@@ -138,7 +138,7 @@ class TOTPViewSet(GenericViewSet):
                 user.otp_off()
                 device.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response({'message': '2fa_error'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'Ошибка кода Google authenticator'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

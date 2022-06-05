@@ -4,6 +4,7 @@ from .models import PaymentOrder, PaymentOrderTether, Withdraw
 
 from apps.users.utils import get_user_totp_device
 
+
 class PaymentOrderSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -54,11 +55,11 @@ class WithdrawSerializer(serializers.ModelSerializer):
                             "message": "2fa_error"
                         })
                 except KeyError as e:
-                    raise serializers.ValidationError({"message": "2fa_error"})
+                    raise serializers.ValidationError({"message": "Введите код Google authenticator"})
                 if not device.verify_token(attrs['two_fa_otp']):
-                    raise serializers.ValidationError({"message": "2fa_invalid"})
+                    raise serializers.ValidationError({"message": "Ошибка кода Google authenticator"})
 
         user_balance = user.balance
         if user_balance.balance < attrs.get('amount'):
-            raise serializers.ValidationError({'message': 'not_enough_balance'})
+            raise serializers.ValidationError({'message': 'Недостаточно баланса'})
         return super().validate(attrs)
