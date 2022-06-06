@@ -17,7 +17,7 @@ from apps.telegram_bot.tasks import notify_trader
 class TraderGroupViewSet(RetrieveModelMixin,
                          ListModelMixin,
                          GenericViewSet):
-    queryset = TradeGroup.objects.with_amount_collected().filter(status=TradeGroup.Status.RECRUITED)
+    queryset = TradeGroup.objects.with_amount_collected().filter(status=TradeGroup.Status.RECRUITED).order_by('-created')
     serializer_class = TradeGroupSerializer
     permission_classes = [IsTrader, IsVerified]
 
