@@ -44,7 +44,7 @@ class RatingSerializer(serializers.ModelSerializer):
 
 
 class DocumentImageSerializer(serializers.ModelSerializer):
-    image = serializers.ImageField()
+    image = serializers.FileField()
 
     class Meta:
         model = DocumentImage
