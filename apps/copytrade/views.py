@@ -82,7 +82,7 @@ class TraderGroupViewSet(RetrieveModelMixin,
     @action(methods=['post'], detail=True, permission_classes=[IsGroupOwner])
     def delete(self, request, pk):
         instance = self.get_object()
-        if instance.memberships:
+        if instance.memberships.exists():
             return Response({'message': 'Нельзя удалить группу'}, status=status.HTTP_403_FORBIDDEN)
         instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
